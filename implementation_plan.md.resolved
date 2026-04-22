@@ -1,0 +1,329 @@
+# Maestro Social Hub — Brainstorm & Implementation Plan
+
+> **Maestro** is an AI-centric online university. This document outlines the vision, feature brainstorm, and phased build plan for its social platform — a place where students connect, collaborate, share work, and grow together.
+
+---
+
+## 1 · Vision & Core Pillars
+
+| Pillar | Description |
+|---|---|
+| **Learn Together** | Students on the same course find each other, form study groups, and work through lessons in real time |
+| **Build in Public** | Every student has a portfolio that grows as they complete projects — a living résumé |
+| **AI-Native** | AI is woven into the platform: smart feeds, study recommendations, writing assistance, code review |
+| **Community First** | Social features (feed, reactions, comments, DMs) make the platform feel alive and sticky |
+
+---
+
+## 2 · Feature Brainstorm
+
+### 2.1 Authentication & Accounts
+- Email + password registration with email verification
+- OAuth (Google, GitHub) for quick sign-up
+- Role system: **Student**, **Instructor**, **Admin**
+- Onboarding wizard: pick courses, set interests, upload avatar
+
+### 2.2 Social Feed (The "Quad")
+- Chronological + algorithmic feed of posts from people you follow and your course cohorts
+- Post types:
+  - **Text** — status updates, questions, thoughts
+  - **Rich Media** — images, embedded videos, code snippets with syntax highlighting
+  - **Project Showcase** — link a portfolio piece directly into the feed with a preview card
+  - **Poll** — quick polls for study group decisions or community engagement
+  - **Milestone** — auto-generated posts when a student completes a course, earns a badge, or ships a project
+- Reactions (🔥 Brilliant, 💡 Insightful, 🤝 Helpful, 👏 Congrats) — more expressive than a plain "like"
+- Threaded comments with inline code, markdown support, and @mentions
+- Bookmarking / saving posts
+- Share / repost to your own feed
+- Content moderation queue for admins
+
+### 2.3 User Profiles
+- **Profile Header** — avatar, banner image, display name, headline (e.g. "AI Engineering Student · Cohort 7"), location, links (GitHub, LinkedIn, personal site)
+- **Bio Section** — rich text about-me
+- **Stats Bar** — courses completed, projects shipped, streak days, reputation score
+- **Activity Tab** — recent posts, comments, and reactions
+- **Portfolio Tab** — (see 2.4)
+- **Courses Tab** — enrolled courses with progress bars
+- **Connections Tab** — followers / following list
+- **Badges & Achievements** — earned through platform activity (first project, 30-day streak, top contributor, etc.)
+
+### 2.4 Portfolio
+- Grid or list view of completed projects
+- Each project card contains:
+  - Title, description, thumbnail/cover image
+  - Tech stack tags
+  - Link to live demo / GitHub repo
+  - Related course
+  - Peer endorsements ("I worked with them on this")
+- Drag-and-drop reordering to curate featured order
+- **Public shareable link** — students can share their Maestro portfolio externally (like a mini personal website)
+- PDF export for resumes / applications
+
+### 2.5 Course Groups ("Cohorts")
+- Auto-created group for every course offering
+- Group features:
+  - **Discussion board** — threaded Q&A organized by lesson/module
+  - **Member directory** — see who's in your cohort with progress status
+  - **Study rooms** — small breakout groups (2–5 people) for collaborative learning
+  - **Resource sharing** — pin helpful links, notes, files
+  - **Group progress tracker** — visual chart of cohort's collective progress
+- **Study Buddy Matching** — AI matches students based on pace, timezone, learning style, and availability
+- **Office Hours** — scheduled sessions where instructors or TAs are available (integrated with calendar)
+
+### 2.6 Messaging & Notifications
+- **Direct Messages** — 1:1 real-time chat with markdown + code snippet support
+- **Group Chat** — for study rooms and cohort sub-groups
+- **Notification Center** — bell icon with categorized notifications:
+  - Social (likes, comments, follows, mentions)
+  - Academic (new lesson available, assignment due, grade posted)
+  - Collaboration (study room invite, buddy match, group activity)
+- Email digest (daily/weekly summary, configurable)
+- Push notifications (opt-in)
+
+### 2.7 AI-Powered Features
+- **Smart Feed Ranking** — surface posts relevant to your courses and interests
+- **AI Study Assistant** — chatbot that can answer questions about lesson material, link to relevant posts, and suggest study partners
+- **Code Review Bot** — students can submit code snippets for AI-powered review before posting to their portfolio
+- **Writing Assistant** — help students write better posts, project descriptions, and bios
+- **Content Summarization** — TL;DR summaries for long discussion threads
+- **Suggested Connections** — "Students like you also follow…"
+
+### 2.8 Discovery & Search
+- **Global Search** — search posts, people, projects, courses, and groups
+- **Explore Page** — trending posts, featured portfolios, popular courses
+- **Hashtags / Topics** — tag content with topics like `#MachineLearning`, `#WebDev`, `#Cohort7`
+- **Student Spotlight** — weekly featured student profile chosen by AI + admin
+
+### 2.9 Gamification & Engagement
+- **XP System** — earn XP for completing lessons, posting, commenting, helping peers
+- **Levels & Ranks** — Novice → Scholar → Expert → Maestro (title!)
+- **Streak Tracking** — daily login / study streaks with visual flame counter
+- **Leaderboards** — per course, per cohort, and global (opt-in)
+- **Achievement Badges** — milestone-based (first post, first project, 100 comments, etc.)
+
+### 2.10 Admin & Moderation
+- Admin dashboard: user management, content moderation, analytics
+- Report system for posts/comments/messages
+- Auto-moderation with AI content filtering
+- Instructor tools: pin announcements, create assignments, manage cohort settings
+
+---
+
+## 3 · Information Architecture
+
+```mermaid
+graph TD
+    A[Landing / Auth] --> B[Home Feed - The Quad]
+    B --> C[Post Detail]
+    B --> D[Create Post]
+    B --> E[Profile]
+    E --> E1[Activity]
+    E --> E2[Portfolio]
+    E --> E3[Courses]
+    E --> E4[Connections]
+    B --> F[Explore / Discover]
+    B --> G[Course Groups]
+    G --> G1[Discussion Board]
+    G --> G2[Study Rooms]
+    G --> G3[Member Directory]
+    B --> H[Messages]
+    H --> H1[DM Thread]
+    H --> H2[Group Chat]
+    B --> I[Notifications]
+    B --> J[Settings]
+    B --> K[Admin Dashboard]
+```
+
+---
+
+## 4 · Tech Stack
+
+| Layer | Technology | Rationale |
+|---|---|---|
+| **Framework** | Next.js 16 (App Router) | Already scaffolded, SSR + API routes in one project |
+| **Styling** | Tailwind CSS 4 | Already installed, rapid UI development |
+| **Language** | TypeScript | Type safety across the full stack |
+| **Database** | PostgreSQL via Supabase | Auth, real-time subscriptions, row-level security, storage — all-in-one |
+| **Auth** | Supabase Auth | Email/password, OAuth providers, JWT sessions |
+| **Real-time** | Supabase Realtime | Live feed updates, chat, notifications |
+| **File Storage** | Supabase Storage | Avatars, banners, project images |
+| **AI** | OpenAI API / Vercel AI SDK | Chat assistant, code review, smart feed |
+| **State Management** | React Context + SWR/React Query | Client-side caching and real-time sync |
+| **Deployment** | Vercel | Seamless Next.js deployment, edge functions |
+
+---
+
+## 5 · Database Schema (High-Level)
+
+```mermaid
+erDiagram
+    USERS ||--o{ POSTS : creates
+    USERS ||--o{ COMMENTS : writes
+    USERS ||--o{ PORTFOLIO_PROJECTS : owns
+    USERS ||--o{ FOLLOWS : follows
+    USERS ||--o{ ENROLLMENTS : enrolls_in
+    USERS ||--o{ MESSAGES : sends
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ BADGES : earns
+
+    POSTS ||--o{ COMMENTS : has
+    POSTS ||--o{ REACTIONS : receives
+    POSTS ||--o{ BOOKMARKS : saved_by
+
+    COURSES ||--o{ ENROLLMENTS : has
+    COURSES ||--o{ COURSE_GROUPS : creates
+    COURSE_GROUPS ||--o{ STUDY_ROOMS : contains
+    COURSE_GROUPS ||--o{ DISCUSSIONS : has
+
+    STUDY_ROOMS ||--o{ STUDY_ROOM_MEMBERS : includes
+```
+
+### Key Tables
+- **users** — id, email, username, display_name, avatar_url, banner_url, bio, headline, links, role, xp, level, streak, created_at
+- **posts** — id, author_id, content, type (text/media/showcase/poll/milestone), media_urls, course_group_id (optional), created_at
+- **comments** — id, post_id, author_id, parent_comment_id (for threading), content, created_at
+- **reactions** — id, post_id, user_id, type (brilliant/insightful/helpful/congrats)
+- **follows** — follower_id, following_id, created_at
+- **portfolio_projects** — id, user_id, title, description, thumbnail_url, demo_url, repo_url, tech_stack[], course_id, sort_order, created_at
+- **courses** — id, title, description, thumbnail_url, instructor_id
+- **enrollments** — id, user_id, course_id, progress_pct, enrolled_at
+- **course_groups** — id, course_id, name, description
+- **study_rooms** — id, group_id, name, max_members, created_by
+- **messages** — id, sender_id, receiver_id, room_id, content, read_at, created_at
+- **notifications** — id, user_id, type, reference_id, message, read, created_at
+- **badges** — id, name, description, icon_url, criteria
+- **user_badges** — user_id, badge_id, earned_at
+- **bookmarks** — user_id, post_id, created_at
+
+---
+
+## 6 · Phased Implementation Plan
+
+### Phase 1 — Foundation (Week 1–2)
+| Task | Details |
+|---|---|
+| Set up Supabase | Create project, configure auth providers, set up database tables |
+| Auth system | Sign up, sign in, sign out, OAuth (Google/GitHub), protected routes |
+| Core layout | App shell: sidebar nav, top bar, responsive mobile layout |
+| Design system | Color palette, typography (Inter/Outfit), component primitives (Button, Input, Card, Avatar, Badge) |
+| User settings | Basic settings page: edit name, email, password, avatar |
+
+### Phase 2 — Social Feed (Week 3–4)
+| Task | Details |
+|---|---|
+| Post creation | Rich text editor with markdown, image upload, code blocks |
+| Feed page | Infinite scroll feed with post cards |
+| Post types | Text, media, showcase, poll, milestone |
+| Reactions | Reaction picker with counts |
+| Comments | Threaded comments with markdown |
+| Bookmarks | Save/unsave posts, bookmarks page |
+
+### Phase 3 — Profiles & Portfolios (Week 5–6)
+| Task | Details |
+|---|---|
+| Profile page | Header, bio, stats bar, tabbed layout |
+| Activity tab | User's posts and comments |
+| Portfolio tab | Project grid with CRUD, drag-and-drop reorder |
+| Courses tab | Enrolled courses with progress |
+| Connections | Follow/unfollow, followers/following lists |
+| Public profile | Shareable external link |
+
+### Phase 4 — Course Groups & Collaboration (Week 7–8)
+| Task | Details |
+|---|---|
+| Course catalog | Browse/search courses |
+| Course groups | Auto-created cohort groups |
+| Discussion boards | Threaded Q&A per module |
+| Study rooms | Create/join rooms, member management |
+| Study Buddy Match | AI matching algorithm |
+| Member directory | Search cohort members, filter by progress |
+
+### Phase 5 — Messaging & Notifications (Week 9–10)
+| Task | Details |
+|---|---|
+| DMs | Real-time 1:1 messaging |
+| Group chat | Study room integrated chat |
+| Notification center | Bell icon, categorized notifications |
+| Email digests | Configurable daily/weekly summaries |
+
+### Phase 6 — AI Features & Gamification (Week 11–12)
+| Task | Details |
+|---|---|
+| AI Study Assistant | In-app chatbot for course Q&A |
+| Code Review Bot | Submit code for AI review |
+| Smart Feed | AI-ranked content |
+| XP & Levels | XP tracking, level progression |
+| Badges | Achievement system with criteria |
+| Leaderboards | Per-course and global rankings |
+| Streaks | Daily activity tracking |
+
+### Phase 7 — Polish & Launch (Week 13–14)
+| Task | Details |
+|---|---|
+| Admin dashboard | User management, moderation, analytics |
+| Search & Explore | Global search, trending content, hashtags |
+| Performance | Optimize queries, caching, lazy loading |
+| Accessibility | WCAG compliance, keyboard nav, screen reader support |
+| Mobile polish | Responsive refinements, touch interactions |
+| SEO | Meta tags, OG images, sitemap |
+| Testing | E2E tests, integration tests, load testing |
+
+---
+
+## 7 · UI/UX Direction
+
+### Look & Feel
+- **Dark-mode first** with light mode toggle — matches the "tech-forward AI university" brand
+- **Glassmorphism accents** — frosted glass cards, subtle blur effects
+- Deep indigo/violet primary palette with electric cyan accents
+- Smooth micro-animations: card hover lifts, reaction pop-ins, skeleton loading states
+- **Typography**: Inter for body, Outfit for headings — clean and modern
+
+### Key Screens (Priority Order)
+1. **Auth** — Cinematic landing with animated gradient, clean login/register forms
+2. **The Quad (Feed)** — Left sidebar (nav), center feed, right sidebar (trending / suggested connections)
+3. **Post Composer** — Modal or slide-up panel with rich editor
+4. **Profile** — Hero banner + avatar overlap, tabbed content
+5. **Portfolio** — Masonry grid of project cards with hover previews
+6. **Course Group** — Discussion board with collapsible threads, member sidebar
+7. **Messages** — Slack-like layout with conversation list + chat pane
+8. **Notifications** — Dropdown + full page with filters
+
+---
+
+## 8 · Verification Plan
+
+### Automated Tests
+- **Unit tests** (Vitest): utility functions, data transformations, form validation
+- **Component tests** (React Testing Library): post card rendering, comment threading, reaction toggling
+- **E2E tests** (Playwright): full auth flow, post CRUD, profile editing, navigation
+  - Command: `npx playwright test`
+
+### Browser Verification
+- Use the browser tool to visually verify key screens after each phase
+- Check responsive layouts at mobile (375px), tablet (768px), and desktop (1280px) breakpoints
+
+### Manual Verification
+- After each phase, the user should:
+  1. Run `npm run dev` and navigate through the new features
+  2. Test auth flows (sign up, sign in, sign out)
+  3. Create posts, add comments, react to content
+  4. Edit profile and add portfolio projects
+  5. Join course groups and create study rooms
+  6. Send messages and check notifications
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Database Provider**: This plan proposes **Supabase** (PostgreSQL + Auth + Realtime + Storage) as an all-in-one backend. If you prefer a different stack (e.g., Prisma + separate auth like NextAuth, or Firebase), let me know and I'll adjust.
+
+> [!IMPORTANT]
+> **AI Provider**: The plan uses the **OpenAI API** (via Vercel AI SDK) for AI features. If you have a preferred AI provider or want to use a self-hosted model, let me know.
+
+> [!IMPORTANT]
+> **Scope for v1**: This is an ambitious feature set. Would you like to start with a focused MVP (Phases 1–3: Auth + Feed + Profiles/Portfolios) and iterate, or do you want to plan for the full scope from the start?
+
+> [!NOTE]
+> **Tailwind CSS 4** is already configured in the project. The plan builds on the existing Next.js 16 + Tailwind 4 scaffold.
