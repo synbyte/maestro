@@ -87,7 +87,7 @@ export default function Sidebar() {
                             {profile?.display_name || "New User"}
                         </div>
                         <div className="text-xs text-[#aaaaa5] truncate">
-                            {profile?.cohort || "Set up profile"}
+                            {profile?.start_date ? `${new Date(profile.start_date + "T12:00:00").toLocaleString('default', { month: 'short' })}. Cohort` : "Set up profile"}
                         </div>
                     </div>
                 </button>
