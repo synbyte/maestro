@@ -16,6 +16,8 @@ create table public.profiles (
   bio text,
   start_date text,
   is_onboarded boolean default false,
+  current_streak integer default 0,
+  last_login_date date,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -29,6 +31,25 @@ create policy "Users can insert their own profile." on profiles
   for insert with check ((select auth.uid()) = id);
 create policy "Users can update own profile." on profiles
   for update using ((select auth.uid()) = id);
+
+-- CREATE USER COURSES TABLE
+create table public.user_courses (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  course_name text not null,
+  current_lesson text,
+  is_completed boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Turn on Row Level Security for user_courses
+alter table public.user_courses enable row level security;
+
+-- User Courses Policies
+create policy "Courses are viewable by everyone." on user_courses
+  for select using (true);
+create policy "Users can manage their own courses." on user_courses
+  for all using ((select auth.uid()) = user_id);
 
 -- Function and trigger to automatically create profile for new auth.users
 create or replace function public.handle_new_user()

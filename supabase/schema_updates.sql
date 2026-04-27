@@ -11,4 +11,25 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS current_projects text,
   ADD COLUMN IF NOT EXISTS bio text,
   ADD COLUMN IF NOT EXISTS start_date text,
-  ADD COLUMN IF NOT EXISTS is_onboarded boolean default false;
+  ADD COLUMN IF NOT EXISTS is_onboarded boolean default false,
+  ADD COLUMN IF NOT EXISTS current_streak integer default 0,
+  ADD COLUMN IF NOT EXISTS last_login_date date;
+
+-- CREATE USER COURSES TABLE
+CREATE TABLE IF NOT EXISTS public.user_courses (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  course_name text not null,
+  current_lesson text,
+  is_completed boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Turn on Row Level Security for user_courses
+ALTER TABLE public.user_courses ENABLE ROW LEVEL SECURITY;
+
+-- User Courses Policies
+CREATE POLICY "Courses are viewable by everyone." ON public.user_courses
+  FOR SELECT USING (true);
+CREATE POLICY "Users can manage their own courses." ON public.user_courses
+  FOR ALL USING ((select auth.uid()) = user_id);

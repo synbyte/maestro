@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AvatarUpload from "@/components/avatar-upload";
 import BannerUpload from "@/components/banner-upload";
+import { CourseEditor } from "@/components/course-editor";
 
 export default function EditProfile() {
     const router = useRouter();
@@ -223,6 +224,13 @@ export default function EditProfile() {
                             disabled={isLoading}
                         />
                     </div>
+                </section>
+
+                {/* Courses Section */}
+                <section className="space-y-6 pt-6 border-t border-border">
+                    <h2 className="text-lg font-medium text-foreground">Enrolled Courses</h2>
+                    <p className="text-sm text-muted -mt-4 mb-4">Track your course progress and display completions on your profile.</p>
+                    <CourseEditor userId={user.id} />
                 </section>
 
                 {/* Portfolio Details (Phase 3) */}

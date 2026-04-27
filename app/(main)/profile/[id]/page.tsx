@@ -15,6 +15,7 @@ export default function ProfilePage() {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
+    const [userCourses, setUserCourses] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState("activity");
     const [loading, setLoading] = useState(true);
 
@@ -53,6 +54,16 @@ export default function ProfilePage() {
                 setPosts(postsData);
             }
 
+            const { data: coursesData } = await supabase
+                .from("user_courses")
+                .select("*")
+                .eq("user_id", profileId)
+                .order("created_at", { ascending: true });
+            
+            if (coursesData) {
+                setUserCourses(coursesData);
+            }
+
             setLoading(false);
         };
 
@@ -83,11 +94,12 @@ export default function ProfilePage() {
     const joinDate = new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" });
     const cohortStr = profile.start_date ? `${new Date(profile.start_date + "T12:00:00").toLocaleString('default', { month: 'short' })}. Cohort` : "Cohort";
 
-    // Mock Stats
+    // Real Stats
+    const completedCoursesCount = userCourses.filter(c => c.is_completed).length;
     const stats = [
-        { label: "Courses", value: "3", icon: <BookOpen size={16} className="text-blue-500" /> },
+        { label: "Courses", value: completedCoursesCount.toString(), icon: <BookOpen size={16} className="text-blue-500" /> },
         { label: "Projects", value: "12", icon: <Briefcase size={16} className="text-purple-500" /> },
-        { label: "Streak", value: "14 Days", icon: <Flame size={16} className="text-orange-500" /> },
+        { label: "Streak", value: `${profile.current_streak || 0} Days`, icon: <Flame size={16} className="text-orange-500" /> },
         { label: "Reputation", value: "1,250", icon: <Award size={16} className="text-yellow-500" /> }
     ];
 
@@ -244,7 +256,42 @@ export default function ProfilePage() {
                             </div>
                         )}
 
-                        {(activeTab === "courses" || activeTab === "connections") && (
+                        {activeTab === "courses" && (
+                            <div className="space-y-4">
+                                {userCourses.length === 0 ? (
+                                    <div className="text-center py-12 text-muted text-sm border border-border rounded-xl">
+                                        Not enrolled in any courses yet.
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {userCourses.map(course => (
+                                            <div key={course.id} className="bg-transparent border border-border rounded-xl p-5 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h3 className="font-semibold text-foreground">{course.course_name}</h3>
+                                                        {course.is_completed && (
+                                                            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded uppercase tracking-wider border border-green-500/20">
+                                                                Completed
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-muted mb-4">
+                                                        {course.is_completed ? "Finished all lessons" : `Currently on: ${course.current_lesson || "Starting soon"}`}
+                                                    </p>
+                                                </div>
+                                                <div className="w-full bg-[#1a1a1a] h-1.5 rounded-full overflow-hidden">
+                                                    <div 
+                                                        className={`h-full transition-all duration-500 ${course.is_completed ? "bg-green-500 w-full" : "bg-primary w-1/3"}`} 
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "connections" && (
                             <div className="text-center py-12 text-muted text-sm border border-border rounded-xl">
                                 Feature coming soon.
                             </div>
