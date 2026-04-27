@@ -61,21 +61,25 @@ export default function Dashboard() {
                 "postgres_changes",
                 { event: "*", schema: "public", table: "posts" },
                 (payload) => {
-                    verifyAndPrependPost(payload.new.id || payload.old.id);
+                    const newId = (payload.new as any)?.id;
+                    const oldId = (payload.old as any)?.id;
+                    if (newId || oldId) verifyAndPrependPost(newId || oldId);
                 }
             )
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "comments" },
                 (payload) => {
-                    if (payload.new?.post_id) verifyAndPrependPost(payload.new.post_id);
+                    const postId = (payload.new as any)?.post_id || (payload.old as any)?.post_id;
+                    if (postId) verifyAndPrependPost(postId);
                 }
             )
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "reactions" },
                 (payload) => {
-                    if (payload.new?.post_id) verifyAndPrependPost(payload.new.post_id);
+                    const postId = (payload.new as any)?.post_id || (payload.old as any)?.post_id;
+                    if (postId) verifyAndPrependPost(postId);
                 }
             )
             .subscribe();
