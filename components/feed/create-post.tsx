@@ -2,10 +2,25 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Code } from "lucide-react";
 
 export function CreatePost({ user }: { user: any }) {
     const supabase = createClient();
     const [postText, setPostText] = useState("");
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const value = target.value;
+            setPostText(value.substring(0, start) + "\t" + value.substring(end));
+            setTimeout(() => {
+                target.selectionStart = target.selectionEnd = start + 1;
+            }, 0);
+        }
+    };
 
     const handlePost = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,11 +48,23 @@ export function CreatePost({ user }: { user: any }) {
                     placeholder="What are you building today?"
                     value={postText}
                     onChange={(e) => setPostText(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     disabled={!user}
                 />
                 <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
-                    <div className="text-muted text-xs">
-                        {user ? "Supports markdown" : "Log in to post"}
+                    <div className="flex items-center gap-3 text-muted text-xs">
+                        <button 
+                            type="button" 
+                            onClick={() => setPostText(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")} 
+                            className="p-1.5 hover:text-foreground transition-colors rounded hover:bg-[#333]" 
+                            title="Format as Code Block"
+                            disabled={!user}
+                        >
+                            <Code size={16} />
+                        </button>
+                        <span>
+                            {user ? "Supports markdown" : "Log in to post"}
+                        </span>
                     </div>
                     <button type="submit" className="btn btn-primary px-4 py-1.5 text-sm" disabled={!postText.trim() || !user}>
                         Post

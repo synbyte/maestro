@@ -3,10 +3,25 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Comment } from "./comment";
+import { Code } from "lucide-react";
 
 export function CommentSection({ postId, comments, user, onRefresh }: { postId: string, comments: any[], user: any, onRefresh?: () => void }) {
     const supabase = createClient();
     const [commentInput, setCommentInput] = useState("");
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const value = target.value;
+            setCommentInput(value.substring(0, start) + "\t" + value.substring(end));
+            setTimeout(() => {
+                target.selectionStart = target.selectionEnd = start + 1;
+            }, 0);
+        }
+    };
 
     const handleCommentSubmit = async () => {
         if (!user || !commentInput.trim()) return;
@@ -32,19 +47,33 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
                 <Comment key={comment.id} comment={comment} user={user} onRefresh={onRefresh} />
             ))}
 
-            <div className="flex gap-2">
-                <input
-                    className="input-field text-sm py-1.5 px-3 w-full"
+            <div className="flex flex-col gap-2 bg-[#1a1a1a] p-3 rounded border border-border mt-3">
+                <textarea
+                    className="w-full bg-transparent border-none resize-none focus:outline-none placeholder:text-muted min-h-[60px] text-sm"
                     placeholder="Write a comment..."
                     value={commentInput}
                     onChange={(e) => setCommentInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={!user}
                 />
-                <button
-                    onClick={handleCommentSubmit}
-                    className="btn btn-secondary text-xs px-3 py-1.5"
-                >
-                    Reply
-                </button>
+                <div className="flex justify-between items-center mt-1">
+                    <button 
+                        type="button" 
+                        onClick={() => setCommentInput(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")} 
+                        className="p-1.5 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]" 
+                        title="Format as Code Block"
+                        disabled={!user}
+                    >
+                        <Code size={16} />
+                    </button>
+                    <button
+                        onClick={handleCommentSubmit}
+                        className="btn btn-secondary text-xs px-3 py-1.5"
+                        disabled={!user || !commentInput.trim()}
+                    >
+                        Reply
+                    </button>
+                </div>
             </div>
         </div>
     );

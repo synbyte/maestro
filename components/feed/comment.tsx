@@ -1,15 +1,41 @@
 "use client";
 
 import { useState } from "react";
-
 import { createClient } from "@/lib/supabase/client";
+import ReactMarkdown from "react-markdown";
 
 export function Comment({ comment, user, onRefresh }: { comment: any, user: any, onRefresh?: () => void }) {
     const supabase = createClient();
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editContent, setEditContent] = useState(comment.content);
     
     // Check if text is long enough to warrant a show more button
     const isLongText = comment.content?.length > 150;
+
+    const handleEditSave = async () => {
+        if (!editContent.trim() || editContent === comment.content) {
+            setIsEditing(false);
+            return;
+        }
+        await supabase.from("comments").update({ content: editContent }).eq("id", comment.id);
+        setIsEditing(false);
+        if (onRefresh) onRefresh();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const value = target.value;
+            setEditContent(value.substring(0, start) + "\t" + value.substring(end));
+            setTimeout(() => {
+                target.selectionStart = target.selectionEnd = start + 1;
+            }, 0);
+        }
+    };
 
     const handleDeleteComment = async () => {
         if (!user || user.id !== comment.user_id) return;
@@ -30,18 +56,45 @@ export function Comment({ comment, user, onRefresh }: { comment: any, user: any,
                 <div className="flex justify-between items-start">
                     <span className="font-semibold text-foreground text-xs block mb-0.5">{comment.profiles?.display_name || "Unknown"}</span>
                     {user?.id === comment.user_id && (
-                        <button 
-                            onClick={handleDeleteComment} 
-                            className="text-sm text-muted hover:text-foreground transition-colors opacity-0 group-hover/comment:opacity-100 bg-transparent border-none cursor-pointer"
-                            title="Delete Comment"
-                        >
-                            ✕
-                        </button>
+                        <div className="flex gap-2 opacity-0 group-hover/comment:opacity-100 transition-opacity">
+                            <button 
+                                onClick={() => {
+                                    setIsEditing(!isEditing);
+                                    setEditContent(comment.content);
+                                }} 
+                                className="text-xs text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                                title="Edit Comment"
+                            >
+                                Edit
+                            </button>
+                            <button 
+                                onClick={handleDeleteComment} 
+                                className="text-sm text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                                title="Delete Comment"
+                            >
+                                ✕
+                            </button>
+                        </div>
                     )}
                 </div>
-                <div className={`text-muted leading-relaxed ${!isExpanded ? "line-clamp-4" : ""}`}>
-                    {comment.content}
-                </div>
+                {isEditing ? (
+                    <div className="mt-1">
+                        <textarea
+                            className="w-full bg-[#121212] border border-[#333] rounded p-2 text-xs focus:outline-none placeholder:text-muted min-h-[60px]"
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <div className="flex justify-end gap-2 mt-1">
+                            <button onClick={() => setIsEditing(false)} className="text-[10px] text-muted hover:text-foreground">Cancel</button>
+                            <button onClick={handleEditSave} className="btn btn-primary text-[10px] px-2 py-1">Save</button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className={`text-muted leading-relaxed prose prose-invert prose-sm max-w-none prose-p:leading-relaxed markdown-body ${!isExpanded ? "line-clamp-4" : ""}`}>
+                        <ReactMarkdown>{comment.content}</ReactMarkdown>
+                    </div>
+                )}
                 {isLongText && (
                     <button 
                         onClick={() => setIsExpanded(!isExpanded)} 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Reactions } from "./reactions";
 import { CommentSection } from "./comment-section";
+import ReactMarkdown from "react-markdown";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -16,6 +17,32 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     const supabase = createClient();
     const [expandedComments, setExpandedComments] = useState(false);
     const [reactionPicker, setReactionPicker] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editContent, setEditContent] = useState(post.content);
+
+    const handleEditSave = async () => {
+        if (!editContent.trim() || editContent === post.content) {
+            setIsEditing(false);
+            return;
+        }
+        await supabase.from("posts").update({ content: editContent }).eq("id", post.id);
+        setIsEditing(false);
+        if (onRefresh) onRefresh();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const value = target.value;
+            setEditContent(value.substring(0, start) + "\t" + value.substring(end));
+            setTimeout(() => {
+                target.selectionStart = target.selectionEnd = start + 1;
+            }, 0);
+        }
+    };
 
     const handleReact = async (reactionType: string) => {
         if (!user) return;
@@ -65,19 +92,46 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                     </div>
                 </div>
                 {user?.id === post.user_id && (
-                    <button 
-                        onClick={handleDeletePost} 
-                        className="text-lg text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer opacity-0 group-hover/post:opacity-100 absolute top-4 right-4"
-                        title="Delete Post"
-                    >
-                        ✕
-                    </button>
+                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/post:opacity-100 transition-opacity">
+                        <button 
+                            onClick={() => {
+                                setIsEditing(!isEditing);
+                                setEditContent(post.content);
+                            }} 
+                            className="text-sm text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                            title="Edit Post"
+                        >
+                            Edit
+                        </button>
+                        <button 
+                            onClick={handleDeletePost} 
+                            className="text-lg text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
+                            title="Delete Post"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 )}
             </div>
 
-            <p className="text-foreground text-sm leading-relaxed mb-3 whitespace-pre-wrap">
-                {post.content}
-            </p>
+            {isEditing ? (
+                <div className="mb-3">
+                    <textarea
+                        className="w-full bg-[#1a1a1a] border border-border rounded p-3 text-sm focus:outline-none placeholder:text-muted min-h-[100px]"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <div className="flex justify-end gap-2 mt-2">
+                        <button onClick={() => setIsEditing(false)} className="text-xs text-muted hover:text-foreground">Cancel</button>
+                        <button onClick={handleEditSave} className="btn btn-primary text-xs px-3 py-1.5">Save</button>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-foreground text-sm leading-relaxed mb-3 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed markdown-body">
+                    <ReactMarkdown>{post.content}</ReactMarkdown>
+                </div>
+            )}
 
             <div className="mb-3">
                 <Reactions reactions={post.reactions} currentUser={user} onToggleReaction={handleReact} />
