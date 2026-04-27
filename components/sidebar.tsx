@@ -107,12 +107,30 @@ export default function Sidebar() {
                             </span>
                         )}
                     </Link>
+
+                    {/* Coming Soon Skeletons */}
+                    <div className="space-y-1">
+                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
+                            <span>Events</span>
+                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
+                        </div>
+                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
+                            <span>Study</span>
+                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
+                        </div>
+                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
+                            <span>Showcase</span>
+                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
+                        </div>
+                    </div>
                 </nav>
             </div>
 
             <div className="p-4 border-t border-[#333] relative">
                 {menuOpen && (
-                    <div className="absolute bottom-full left-4 mb-2 w-56 bg-[#1a1a1a] border border-[#333] rounded shadow-lg overflow-hidden animate-fade-in z-50">
+                    <>
+                        <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                        <div className="absolute bottom-full left-4 mb-2 w-56 bg-[#1a1a1a] border border-[#333] rounded shadow-lg overflow-hidden animate-fade-in z-50">
                         <Link
                             href="/profile/edit"
                             className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-[#ecebe4]"
@@ -127,6 +145,7 @@ export default function Sidebar() {
                             Sign out
                         </button>
                     </div>
+                    </>
                 )}
 
                 <button
