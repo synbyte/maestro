@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Maestro | AI-first higher education",
-  description: "The most effective way to build your career—with AI.",
+  title: "Maestro Mix | The Social Hub for Students",
+  description: "Connect with peers, study together, and build community.",
 };
 
 export default function RootLayout({

@@ -455,7 +455,7 @@ export default function ProfilePage() {
                                                     <UserAvatar userId={p.id} src={p.avatar_url} name={p.display_name} size="md" />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="text-sm font-semibold truncate group-hover:underline">{p.display_name}</div>
-                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Student"}</div>
+                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Mix Student"}</div>
                                                     </div>
                                                 </Link>
                                             ))}
@@ -482,7 +482,7 @@ export default function ProfilePage() {
                                                     <UserAvatar userId={p.id} src={p.avatar_url} name={p.display_name} size="md" />
                                                     <div className="flex-1 min-w-0">
                                                         <div className="text-sm font-semibold truncate group-hover:underline">{p.display_name}</div>
-                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Student"}</div>
+                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Mix Student"}</div>
                                                     </div>
                                                 </Link>
                                             ))}

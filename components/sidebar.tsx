@@ -85,7 +85,7 @@ export default function Sidebar() {
         <>
             <div className="p-6">
                 <Link href="/dashboard" className="text-xl font-medium tracking-tight mb-10 block" onClick={() => setMobileMenuOpen(false)}>
-                    Maestro
+                    Maestro Mix
                 </Link>
                 <nav className="space-y-2">
                     <Link
@@ -161,7 +161,7 @@ export default function Sidebar() {
             {/* Mobile Header & Hamburger */}
             <div className="md:hidden flex items-center justify-between p-4 border-b border-[#333] bg-[#121212] sticky top-0 z-40">
                 <Link href="/dashboard" className="text-lg font-medium tracking-tight">
-                    Maestro
+                    Maestro Mix
                 </Link>
                 <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#ecebe4]">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

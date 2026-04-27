@@ -99,7 +99,7 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
                                 
                                 <div className="mb-3">
                                     <div className="text-sm font-semibold text-foreground truncate">{profile.display_name}</div>
-                                    <div className="text-[11px] text-muted truncate">{profile.headline || "Maestro Student"}</div>
+                                    <div className="text-[11px] text-muted truncate">{profile.headline || "Maestro Mix Student"}</div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 mb-3">

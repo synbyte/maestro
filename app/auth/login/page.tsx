@@ -89,20 +89,7 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className="my-6 flex items-center gap-4">
-                    <hr className="flex-1 border-[#333]" />
-                    <span className="text-xs text-muted font-medium uppercase tracking-wider">or continue with</span>
-                    <hr className="flex-1 border-[#333]" />
-                </div>
 
-                <div className="flex gap-4">
-                    <button type="button" onClick={() => alert("GitHub OAuth integration pending Phase 1.5")} className="btn btn-secondary w-full text-sm">
-                        GitHub
-                    </button>
-                    <button type="button" onClick={() => alert("Google OAuth integration pending Phase 1.5")} className="btn btn-secondary w-full text-sm">
-                        Google
-                    </button>
-                </div>
 
                 <div className="mt-8 text-center text-sm text-muted">
                     Don't have an account?{" "}

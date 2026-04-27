@@ -58,7 +58,7 @@ export default function RegisterPage() {
             <div className="flex flex-1 flex-col mx-auto w-full max-w-sm justify-center px-6 pt-16">
                 <div className="mb-8 text-center mt-[-10vh]">
                     <h1 className="text-3xl font-medium tracking-tight mb-2">Create an account</h1>
-                    <p className="text-muted text-sm">Join Maestro to build your career with AI.</p>
+                    <p className="text-muted text-sm">Join Maestro Mix to connect with your peers.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,20 +108,7 @@ export default function RegisterPage() {
                     </button>
                 </form>
 
-                <div className="my-6 flex items-center gap-4">
-                    <hr className="flex-1 border-[#333]" />
-                    <span className="text-xs text-muted font-medium uppercase tracking-wider">or sign up with</span>
-                    <hr className="flex-1 border-[#333]" />
-                </div>
 
-                <div className="flex gap-4">
-                    <button type="button" onClick={() => alert("GitHub OAuth integration pending Phase 1.5")} className="btn btn-secondary w-full text-sm">
-                        GitHub
-                    </button>
-                    <button type="button" onClick={() => alert("Google OAuth integration pending Phase 1.5")} className="btn btn-secondary w-full text-sm">
-                        Google
-                    </button>
-                </div>
 
                 <div className="mt-8 text-center text-sm text-muted">
                     Already have an account?{" "}
