@@ -21,6 +21,8 @@ export default function ProfilePage() {
     const [followingCount, setFollowingCount] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [activeTab, setActiveTab] = useState("activity");
+    const [followers, setFollowers] = useState<any[]>([]);
+    const [following, setFollowing] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const profileId = params.id as string;
@@ -68,19 +70,27 @@ export default function ProfilePage() {
                 setUserCourses(coursesData);
             }
 
-            // Fetch followers count
-            const { count: followers } = await supabase
+            // Fetch followers
+            const { data: followersData } = await supabase
                 .from("follows")
-                .select("*", { count: "exact", head: true })
+                .select(`
+                    follower:profiles!follows_follower_id_fkey(id, display_name, avatar_url, headline)
+                `)
                 .eq("following_id", profileId);
-            setFollowerCount(followers || 0);
+            const followersList = followersData?.map(f => f.follower) || [];
+            setFollowers(followersList);
+            setFollowerCount(followersList.length);
 
-            // Fetch following count
-            const { count: following } = await supabase
+            // Fetch following
+            const { data: followingData } = await supabase
                 .from("follows")
-                .select("*", { count: "exact", head: true })
+                .select(`
+                    following:profiles!follows_following_id_fkey(id, display_name, avatar_url, headline)
+                `)
                 .eq("follower_id", profileId);
-            setFollowingCount(following || 0);
+            const followingList = followingData?.map(f => f.following) || [];
+            setFollowing(followingList);
+            setFollowingCount(followingList.length);
 
             // Check if current user is following
             if (user && user.id !== profileId) {
@@ -142,18 +152,26 @@ export default function ProfilePage() {
             setPosts(postsData);
         }
 
-        // Refresh counts
-        const { count: followers } = await supabase
+        // Refresh counts and lists
+        const { data: followersData } = await supabase
             .from("follows")
-            .select("*", { count: "exact", head: true })
+            .select(`
+                follower:profiles!follows_follower_id_fkey(id, display_name, avatar_url, headline)
+            `)
             .eq("following_id", profileId);
-        setFollowerCount(followers || 0);
+        const followersList = followersData?.map(f => f.follower) || [];
+        setFollowers(followersList);
+        setFollowerCount(followersList.length);
 
-        const { count: following } = await supabase
+        const { data: followingData } = await supabase
             .from("follows")
-            .select("*", { count: "exact", head: true })
+            .select(`
+                following:profiles!follows_following_id_fkey(id, display_name, avatar_url, headline)
+            `)
             .eq("follower_id", profileId);
-        setFollowingCount(following || 0);
+        const followingList = followingData?.map(f => f.following) || [];
+        setFollowing(followingList);
+        setFollowingCount(followingList.length);
 
         if (currentUser && currentUser.id !== profileId) {
             const { data: followData } = await supabase
@@ -417,8 +435,60 @@ export default function ProfilePage() {
                         )}
 
                         {activeTab === "connections" && (
-                            <div className="text-center py-12 text-muted text-sm border border-border rounded-xl">
-                                Feature coming soon.
+                            <div className="space-y-8">
+                                <div>
+                                    <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                                        Following <span className="text-xs bg-[#222] px-2 py-0.5 rounded text-muted">{following.length}</span>
+                                    </h3>
+                                    {following.length === 0 ? (
+                                        <div className="text-center py-8 text-muted text-sm border border-border border-dashed rounded-xl">
+                                            Not following anyone yet.
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {following.map(p => (
+                                                <Link 
+                                                    key={p.id} 
+                                                    href={`/profile/${p.id}`}
+                                                    className="flex items-center gap-3 p-3 border border-border rounded-xl hover:bg-[#1a1a1a] transition-colors group"
+                                                >
+                                                    <UserAvatar userId={p.id} src={p.avatar_url} name={p.display_name} size="md" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="text-sm font-semibold truncate group-hover:underline">{p.display_name}</div>
+                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Student"}</div>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+                                        Followers <span className="text-xs bg-[#222] px-2 py-0.5 rounded text-muted">{followers.length}</span>
+                                    </h3>
+                                    {followers.length === 0 ? (
+                                        <div className="text-center py-8 text-muted text-sm border border-border border-dashed rounded-xl">
+                                            No followers yet.
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {followers.map(p => (
+                                                <Link 
+                                                    key={p.id} 
+                                                    href={`/profile/${p.id}`}
+                                                    className="flex items-center gap-3 p-3 border border-border rounded-xl hover:bg-[#1a1a1a] transition-colors group"
+                                                >
+                                                    <UserAvatar userId={p.id} src={p.avatar_url} name={p.display_name} size="md" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="text-sm font-semibold truncate group-hover:underline">{p.display_name}</div>
+                                                        <div className="text-[11px] text-muted truncate">{p.headline || "Maestro Student"}</div>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { UserAvatar } from "@/components/user-avatar";
+import { UserTooltip } from "@/components/user-tooltip";
 
 export function Comment({ comment, user, onRefresh }: { comment: any, user: any, onRefresh?: () => void }) {
     const supabase = createClient();
@@ -49,19 +50,23 @@ export function Comment({ comment, user, onRefresh }: { comment: any, user: any,
 
     return (
         <div className="flex gap-2 items-start text-sm bg-[#1a1a1a] p-3 rounded group/comment">
-            <Link href={`/profile/${comment.user_id}`} className="shrink-0 block">
-                <UserAvatar 
-                    userId={comment.user_id} 
-                    src={comment.profiles?.avatar_url} 
-                    name={comment.profiles?.display_name}
-                    size="sm"
-                />
-            </Link>
+            <UserTooltip userId={comment.user_id}>
+                <Link href={`/profile/${comment.user_id}`} className="shrink-0 block">
+                    <UserAvatar 
+                        userId={comment.user_id} 
+                        src={comment.profiles?.avatar_url} 
+                        name={comment.profiles?.display_name}
+                        size="sm"
+                    />
+                </Link>
+            </UserTooltip>
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
-                    <Link href={`/profile/${comment.user_id}`} className="font-semibold text-foreground text-xs block mb-0.5 hover:underline">
-                        {comment.profiles?.display_name || "Unknown"}
-                    </Link>
+                    <UserTooltip userId={comment.user_id}>
+                        <Link href={`/profile/${comment.user_id}`} className="font-semibold text-foreground text-xs block mb-0.5 hover:underline">
+                            {comment.profiles?.display_name || "Unknown"}
+                        </Link>
+                    </UserTooltip>
                     {user?.id === comment.user_id && (
                         <div className="flex gap-2 opacity-0 group-hover/comment:opacity-100 transition-opacity">
                             <button 

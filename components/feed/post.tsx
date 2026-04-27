@@ -6,7 +6,7 @@ import { Reactions } from "./reactions";
 import { CommentSection } from "./comment-section";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
-import { UserAvatar } from "@/components/user-avatar";
+import { UserInfo } from "@/components/user-info";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -85,24 +85,14 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     return (
         <div className="bg-transparent border border-border p-5 rounded group/post relative">
             <div className="flex justify-between mb-3">
-                <div className="flex gap-3 items-center">
-                    <Link href={`/profile/${post.user_id}`} className="shrink-0 block">
-                        <UserAvatar 
-                            userId={post.user_id} 
-                            src={post.profiles?.avatar_url} 
-                            name={post.profiles?.display_name}
-                            size="md"
-                        />
-                    </Link>
-                    <div>
-                        <Link href={`/profile/${post.user_id}`} className="font-medium text-sm text-foreground hover:underline block">
-                            {post.profiles?.display_name || "Unknown"}
-                        </Link>
-                        <div className="text-xs text-muted block md:inline">
-                            {post.profiles?.start_date ? `${new Date(post.profiles.start_date + "T12:00:00").toLocaleString('default', { month: 'short' })}. Cohort` : "Cohort"} • {new Date(post.created_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit', hour12: true })}
-                        </div>
-                    </div>
-                </div>
+                <UserInfo 
+                    userId={post.user_id}
+                    avatarUrl={post.profiles?.avatar_url}
+                    displayName={post.profiles?.display_name}
+                    startDate={post.profiles?.start_date}
+                    timestamp={post.created_at}
+                    size="md"
+                />
                 {user?.id === post.user_id && (
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/post:opacity-100 transition-opacity">
                         <button 

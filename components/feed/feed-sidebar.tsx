@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { UserAvatar } from "@/components/user-avatar";
+import { UserTooltip } from "@/components/user-tooltip";
 
 interface StudyBuddy {
     user_id: string;
@@ -112,24 +113,25 @@ export function FeedSidebar() {
                         <div className="text-xs text-muted">No nearby study buddies yet. Keep going! 🔥</div>
                     ) : (
                         studyBuddies.map((buddy, idx) => (
-                            <Link
-                                key={`${buddy.user_id}-${idx}`}
-                                href={`/profile/${buddy.user_id}`}
-                                className="flex items-center gap-3 group cursor-pointer"
-                            >
-                                <UserAvatar
-                                    userId={buddy.user_id}
-                                    src={buddy.avatar_url}
-                                    name={buddy.display_name}
-                                    size="md"
-                                />
-                                <div className="overflow-hidden">
-                                    <div className="text-sm font-medium text-foreground group-hover:underline truncate">{buddy.display_name}</div>
-                                    <div className="text-[11px] text-muted">
-                                        {buddy.course_name.toUpperCase()} · W{buddy.week_number} L{buddy.lesson_number}
+                            <UserTooltip key={`${buddy.user_id}-${idx}`} userId={buddy.user_id}>
+                                <Link
+                                    href={`/profile/${buddy.user_id}`}
+                                    className="flex items-center gap-3 group cursor-pointer"
+                                >
+                                    <UserAvatar
+                                        userId={buddy.user_id}
+                                        src={buddy.avatar_url}
+                                        name={buddy.display_name}
+                                        size="md"
+                                    />
+                                    <div className="overflow-hidden">
+                                        <div className="text-sm font-medium text-foreground group-hover:underline truncate">{buddy.display_name}</div>
+                                        <div className="text-[11px] text-muted">
+                                            {buddy.course_name.toUpperCase()} · W{buddy.week_number} L{buddy.lesson_number}
+                                        </div>
                                     </div>
-                                </div>
-                            </Link>
+                                </Link>
+                            </UserTooltip>
                         ))
                     )}
                 </div>
@@ -167,12 +169,14 @@ export function FeedSidebar() {
 
 function CohortMember({ id, name, focus, avatar }: { id: string; name: string; focus: string; avatar?: string }) {
     return (
-        <Link href={`/profile/${id}`} className="flex items-center gap-3 group cursor-pointer">
-            <UserAvatar userId={id} src={avatar} name={name} size="md" />
-            <div className="overflow-hidden">
-                <div className="text-sm font-medium text-foreground group-hover:underline truncate">{name}</div>
-                <div className="text-[11px] text-muted line-clamp-1">{focus}</div>
-            </div>
-        </Link>
+        <UserTooltip userId={id}>
+            <Link href={`/profile/${id}`} className="flex items-center gap-3 group cursor-pointer">
+                <UserAvatar userId={id} src={avatar} name={name} size="md" />
+                <div className="overflow-hidden">
+                    <div className="text-sm font-medium text-foreground group-hover:underline truncate">{name}</div>
+                    <div className="text-[11px] text-muted line-clamp-1">{focus}</div>
+                </div>
+            </Link>
+        </UserTooltip>
     );
 }
