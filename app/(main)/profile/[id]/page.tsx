@@ -377,23 +377,28 @@ export default function ProfilePage() {
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {userCourses.map(course => (
-                                            <div key={course.id} className="bg-transparent border border-border rounded-xl p-5 flex flex-col justify-between">
-                                                <div>
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <h3 className="font-semibold text-foreground">{course.course_name}</h3>
-                                                        {course.is_completed && (
-                                                            <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded uppercase tracking-wider border border-green-500/20">
-                                                                Completed
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <p className="text-xs text-muted mb-4">
-                                                        {course.is_completed ? "Finished all lessons" : `Currently on: ${course.current_lesson || "Starting soon"}`}
-                                                    </p>
+                                            <div key={course.id} className="bg-transparent border border-border rounded-xl p-5 flex flex-col justify-between gap-3">
+                                                <div className="flex justify-between items-start">
+                                                    <h3 className="font-semibold text-foreground uppercase tracking-wide">{course.course_name}</h3>
+                                                    {course.is_completed && (
+                                                        <span className="px-2 py-0.5 bg-green-500/10 text-green-500 text-[10px] font-bold rounded uppercase tracking-wider border border-green-500/20">
+                                                            Completed
+                                                        </span>
+                                                    )}
                                                 </div>
+
+                                                <p className="text-xs text-muted">
+                                                    {course.is_completed
+                                                        ? "All lessons finished"
+                                                        : `Week ${course.week_number ?? 1} · Lesson ${course.lesson_number ?? 1}`
+                                                    }
+                                                </p>
+
+                                                {/* Progress bar — approximate based on week out of 30 */}
                                                 <div className="w-full bg-[#1a1a1a] h-1.5 rounded-full overflow-hidden">
-                                                    <div 
-                                                        className={`h-full transition-all duration-500 ${course.is_completed ? "bg-green-500 w-full" : "bg-primary w-1/3"}`} 
+                                                    <div
+                                                        className={`h-full rounded-full transition-all duration-500 ${course.is_completed ? "bg-green-500 w-full" : "bg-primary"}`}
+                                                        style={!course.is_completed ? { width: `${Math.round(((course.week_number ?? 1) / 30) * 100)}%` } : {}}
                                                     />
                                                 </div>
                                             </div>

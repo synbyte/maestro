@@ -31,10 +31,15 @@ CREATE TABLE IF NOT EXISTS public.user_courses (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.profiles(id) on delete cascade not null,
   course_name text not null,
-  current_lesson text,
+  week_number integer default 1,
+  lesson_number integer default 1,
   is_completed boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Add week/lesson columns if upgrading from old schema
+ALTER TABLE public.user_courses ADD COLUMN IF NOT EXISTS week_number integer default 1;
+ALTER TABLE public.user_courses ADD COLUMN IF NOT EXISTS lesson_number integer default 1;
 
 -- Turn on Row Level Security for user_courses
 ALTER TABLE public.user_courses ENABLE ROW LEVEL SECURITY;

@@ -58,7 +58,7 @@ body {
 .input-field {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: transparent;
+  background-color: #1a1a1a;
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--foreground);
@@ -68,6 +68,13 @@ body {
 .input-field:focus {
   outline: none;
   border-color: var(--muted);
+}
+
+/* Ensure select dropdowns always use the dark theme */
+select.input-field,
+select.input-field option {
+  background-color: #1a1a1a;
+  color: var(--foreground);
 }
 
 .markdown-body pre {

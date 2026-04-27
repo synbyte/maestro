@@ -1,6 +1,7 @@
 import Sidebar from "@/components/sidebar";
 import { StreakTracker } from "@/components/streak-tracker";
 import { PresenceProvider } from "@/components/presence-context";
+import { DailyCheckIn } from "@/components/daily-checkin";
 
 export default function MainLayout({
     children,
@@ -9,13 +10,12 @@ export default function MainLayout({
 }) {
     return (
         <PresenceProvider>
-            <div className="min-h-screen flex">
-                <StreakTracker />
-                {/* Sidebar is hidden on mobile, 64px width on desktop */}
-                <Sidebar />
-                <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
-                    {children}
-                </div>
+            <DailyCheckIn />
+            <StreakTracker />
+            <Sidebar />
+            {/* md:ml-64 offsets for the fixed desktop sidebar; pt-[57px] offsets for the sticky mobile header */}
+            <div className="md:ml-64 flex flex-col min-h-screen pt-[57px] md:pt-0 w-full">
+                {children}
             </div>
         </PresenceProvider>
     );
