@@ -240,12 +240,20 @@ export default function ProfilePage() {
                                 Edit Profile
                             </Link>
                         ) : (
-                            <button 
-                                onClick={toggleFollow}
-                                className={`btn px-6 py-2 text-sm font-medium transition-all ${isFollowing ? "btn-secondary" : "btn-primary"}`}
-                            >
-                                {isFollowing ? "Unfollow" : "Follow"}
-                            </button>
+                            <div className="flex gap-2">
+                                <Link 
+                                    href={`/inbox/${profile.id}`}
+                                    className="btn btn-secondary px-4 py-2 text-sm font-medium"
+                                >
+                                    Message
+                                </Link>
+                                <button 
+                                    onClick={toggleFollow}
+                                    className={`btn px-6 py-2 text-sm font-medium transition-all ${isFollowing ? "btn-secondary" : "btn-primary"}`}
+                                >
+                                    {isFollowing ? "Unfollow" : "Follow"}
+                                </button>
+                            </div>
                         )}
                     </div>
 

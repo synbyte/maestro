@@ -75,3 +75,34 @@ CREATE POLICY "Users can follow others." ON public.follows
 DROP POLICY IF EXISTS "Users can unfollow others." ON public.follows;
 CREATE POLICY "Users can unfollow others." ON public.follows
   FOR DELETE USING ((select auth.uid()) = follower_id);
+
+-- CREATE MESSAGES TABLE
+CREATE TABLE IF NOT EXISTS public.messages (
+  id uuid default gen_random_uuid() primary key,
+  sender_id uuid references public.profiles(id) on delete cascade not null,
+  recipient_id uuid references public.profiles(id) on delete cascade not null,
+  content text not null,
+  is_read boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable Realtime for messages
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+-- Add the messages table to Supabase's realtime publication (no dashboard needed)
+ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+
+-- Messages Policies
+DROP POLICY IF EXISTS "Users can view their own messages." ON public.messages;
+CREATE POLICY "Users can view their own messages." ON public.messages
+  FOR SELECT USING (
+    (select auth.uid()) = sender_id OR (select auth.uid()) = recipient_id
+  );
+
+DROP POLICY IF EXISTS "Users can send messages." ON public.messages;
+CREATE POLICY "Users can send messages." ON public.messages
+  FOR INSERT WITH CHECK ((select auth.uid()) = sender_id);
+
+DROP POLICY IF EXISTS "Recipients can mark messages as read." ON public.messages;
+CREATE POLICY "Recipients can mark messages as read." ON public.messages
+  FOR UPDATE USING ((select auth.uid()) = recipient_id);

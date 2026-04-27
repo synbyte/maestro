@@ -13,22 +13,66 @@ export default function Sidebar() {
     const [profile, setProfile] = useState<any>(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
+    const [sidebarUserId, setSidebarUserId] = useState<string | null>(null);
+
+    // Effect 1: Fetch user + data
     useEffect(() => {
-        const fetchUser = async () => {
+        const run = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
-            if (user) {
-                const { data } = await supabase
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", user.id)
-                    .single();
-                setProfile(data);
-            }
+            if (!user) return;
+
+            const { data } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+            setProfile(data);
+
+            const { count } = await supabase
+                .from("messages")
+                .select("*", { count: "exact", head: true })
+                .eq("recipient_id", user.id)
+                .eq("is_read", false);
+            setUnreadCount(count ?? 0);
+            setSidebarUserId(user.id);
         };
-        fetchUser();
-    }, [supabase]);
+        run();
+    }, []);
+
+    // Effect 2: Realtime channel — synchronous pattern
+    useEffect(() => {
+        if (!sidebarUserId) return;
+
+        const channel = supabase.channel(`sidebar_inbox_${sidebarUserId}`);
+
+        channel
+            .on("postgres_changes", {
+                event: "INSERT",
+                schema: "public",
+                table: "messages",
+                filter: `recipient_id=eq.${sidebarUserId}`,
+            }, () => setUnreadCount(prev => prev + 1))
+            .on("postgres_changes", {
+                event: "UPDATE",
+                schema: "public",
+                table: "messages",
+                filter: `recipient_id=eq.${sidebarUserId}`,
+            }, async () => {
+                const { count } = await supabase
+                    .from("messages")
+                    .select("*", { count: "exact", head: true })
+                    .eq("recipient_id", sidebarUserId)
+                    .eq("is_read", false);
+                setUnreadCount(count ?? 0);
+            });
+
+        channel.subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, [sidebarUserId]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -50,6 +94,18 @@ export default function Sidebar() {
                         className={`block px-4 py-2 rounded text-sm transition-colors ${pathname === '/dashboard' ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
                     >
                         The Quad
+                    </Link>
+                    <Link
+                        href="/inbox"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center justify-between px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/inbox') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
+                    >
+                        <span>Inbox</span>
+                        {unreadCount > 0 && (
+                            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                                {unreadCount > 99 ? "99+" : unreadCount}
+                            </span>
+                        )}
                     </Link>
                 </nav>
             </div>
