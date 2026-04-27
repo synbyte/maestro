@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/components/feed/post";
 import Link from "next/link";
 import { MapPin, Link as LinkIcon, GitBranch, Calendar, GraduationCap, Award, Flame, BookOpen, Briefcase } from "lucide-react";
+import { UserAvatar } from "@/components/user-avatar";
 
 export default function ProfilePage() {
     const params = useParams();
@@ -227,13 +228,12 @@ export default function ProfilePage() {
                     {/* Avatar & Edit Button */}
                     <div className="flex justify-between items-end -mt-16 mb-4">
                         <div className="p-1 bg-[#121212] rounded-full z-10">
-                            {profile.avatar_url ? (
-                                <img src={profile.avatar_url} alt="Avatar" className="w-32 h-32 rounded-full object-cover bg-[#222]" />
-                            ) : (
-                                <div className="w-32 h-32 rounded-full bg-[#222] flex items-center justify-center text-4xl font-semibold text-muted">
-                                    {profile.display_name?.charAt(0) || "?"}
-                                </div>
-                            )}
+                            <UserAvatar 
+                                userId={profile.id} 
+                                src={profile.avatar_url} 
+                                name={profile.display_name}
+                                size="xl"
+                            />
                         </div>
                         {isOwnProfile ? (
                             <Link href="/profile/edit" className="btn btn-secondary px-4 py-2 text-sm font-medium">

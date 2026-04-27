@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { UserAvatar } from "@/components/user-avatar";
 
 export function FeedSidebar() {
     const supabase = createClient();
@@ -89,13 +90,12 @@ function CohortMember({ id, name, focus, avatar }: { id: string, name: string; f
     return (
         <Link href={`/profile/${id}`} className="flex items-center justify-between group cursor-pointer">
             <div className="flex gap-3 items-center">
-                {avatar ? (
-                    <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover bg-[#333]" />
-                ) : (
-                    <div className="w-8 h-8 rounded bg-[#333] flex items-center justify-center text-[10px] font-bold">
-                        {name.charAt(0)}
-                    </div>
-                )}
+                <UserAvatar 
+                    userId={id} 
+                    src={avatar} 
+                    name={name}
+                    size="md"
+                />
                 <div>
                     <div className="text-sm font-medium text-foreground group-hover:underline">{name}</div>
                     <div className="text-[11px] text-muted line-clamp-1">{focus}</div>

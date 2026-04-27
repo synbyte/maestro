@@ -6,6 +6,7 @@ import { Reactions } from "./reactions";
 import { CommentSection } from "./comment-section";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import { UserAvatar } from "@/components/user-avatar";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -86,11 +87,12 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
             <div className="flex justify-between mb-3">
                 <div className="flex gap-3 items-center">
                     <Link href={`/profile/${post.user_id}`} className="shrink-0 block">
-                        {post.profiles?.avatar_url ? (
-                            <img src={post.profiles.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                        ) : (
-                            <div className="w-8 h-8 rounded-full bg-[#333] flex-shrink-0" />
-                        )}
+                        <UserAvatar 
+                            userId={post.user_id} 
+                            src={post.profiles?.avatar_url} 
+                            name={post.profiles?.display_name}
+                            size="md"
+                        />
                     </Link>
                     <div>
                         <Link href={`/profile/${post.user_id}`} className="font-medium text-sm text-foreground hover:underline block">
