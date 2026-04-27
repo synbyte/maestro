@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Reactions } from "./reactions";
 import { CommentSection } from "./comment-section";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -79,13 +80,17 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
         <div className="bg-transparent border border-border p-5 rounded group/post relative">
             <div className="flex justify-between mb-3">
                 <div className="flex gap-3 items-center">
-                    {post.profiles?.avatar_url ? (
-                        <img src={post.profiles.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                        <div className="w-8 h-8 rounded-full bg-[#333] flex-shrink-0" />
-                    )}
+                    <Link href={`/profile/${post.user_id}`} className="shrink-0 block">
+                        {post.profiles?.avatar_url ? (
+                            <img src={post.profiles.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-[#333] flex-shrink-0" />
+                        )}
+                    </Link>
                     <div>
-                        <div className="font-medium text-sm text-foreground">{post.profiles?.display_name || "Unknown"}</div>
+                        <Link href={`/profile/${post.user_id}`} className="font-medium text-sm text-foreground hover:underline block">
+                            {post.profiles?.display_name || "Unknown"}
+                        </Link>
                         <div className="text-xs text-muted block md:inline">
                             {post.profiles?.start_date ? `${new Date(post.profiles.start_date + "T12:00:00").toLocaleString('default', { month: 'short' })}. Cohort` : "Cohort"} • {new Date(post.created_at).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit', hour12: true })}
                         </div>

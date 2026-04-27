@@ -5,6 +5,17 @@ create table public.profiles (
   cohort text default 'Cohort 8',
   role text default 'Student',
   avatar_url text,
+  banner_url text,
+  headline text,
+  location text,
+  website_url text,
+  github_url text,
+  linkedin_url text,
+  tech_stack text,
+  current_projects text,
+  bio text,
+  start_date text,
+  is_onboarded boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 

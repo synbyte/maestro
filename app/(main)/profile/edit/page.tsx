@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AvatarUpload from "@/components/avatar-upload";
+import BannerUpload from "@/components/banner-upload";
 
 export default function EditProfile() {
     const router = useRouter();
@@ -12,8 +13,12 @@ export default function EditProfile() {
 
     const [displayName, setDisplayName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
+    const [bannerUrl, setBannerUrl] = useState("");
     const [bio, setBio] = useState("");
     const [startDate, setStartDate] = useState("");
+    const [headline, setHeadline] = useState("");
+    const [location, setLocation] = useState("");
+    const [websiteUrl, setWebsiteUrl] = useState("");
 
     // Phase 3 Portfolio fields
     const [githubUrl, setGithubUrl] = useState("");
@@ -43,8 +48,12 @@ export default function EditProfile() {
             if (data) {
                 if (data.display_name) setDisplayName(data.display_name);
                 if (data.avatar_url) setAvatarUrl(data.avatar_url);
+                if (data.banner_url) setBannerUrl(data.banner_url);
                 if (data.bio) setBio(data.bio);
                 if (data.start_date) setStartDate(data.start_date);
+                if (data.headline) setHeadline(data.headline);
+                if (data.location) setLocation(data.location);
+                if (data.website_url) setWebsiteUrl(data.website_url);
 
                 if (data.github_url) setGithubUrl(data.github_url);
                 if (data.linkedin_url) setLinkedinUrl(data.linkedin_url);
@@ -67,8 +76,12 @@ export default function EditProfile() {
             .update({
                 display_name: displayName,
                 avatar_url: avatarUrl,
+                banner_url: bannerUrl,
                 bio,
                 start_date: startDate,
+                headline,
+                location,
+                website_url: websiteUrl,
                 github_url: githubUrl,
                 linkedin_url: linkedinUrl,
                 tech_stack: techStack,
@@ -114,6 +127,17 @@ export default function EditProfile() {
 
                     <div className="space-y-1.5 p-4 border border-border rounded">
                         <label className="text-sm font-medium text-muted block mb-3">
+                            Profile Banner
+                        </label>
+                        <BannerUpload
+                            userId={user.id}
+                            url={bannerUrl}
+                            onUpload={(url) => setBannerUrl(url)}
+                        />
+                    </div>
+
+                    <div className="space-y-1.5 p-4 border border-border rounded">
+                        <label className="text-sm font-medium text-muted block mb-3">
                             Profile Picture
                         </label>
                         <AvatarUpload
@@ -135,6 +159,36 @@ export default function EditProfile() {
                                 onChange={(e) => setDisplayName(e.target.value)}
                                 className="input-field"
                                 required
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-muted block" htmlFor="headline">
+                                Headline
+                            </label>
+                            <input
+                                id="headline"
+                                type="text"
+                                value={headline}
+                                onChange={(e) => setHeadline(e.target.value)}
+                                className="input-field"
+                                placeholder="e.g. AI Engineering Student · Cohort 8"
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-muted block" htmlFor="location">
+                                Location
+                            </label>
+                            <input
+                                id="location"
+                                type="text"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                className="input-field"
+                                placeholder="e.g. San Francisco, CA"
                                 disabled={isLoading}
                             />
                         </div>
@@ -217,6 +271,21 @@ export default function EditProfile() {
                                 onChange={(e) => setGithubUrl(e.target.value)}
                                 className="input-field"
                                 placeholder="https://github.com/..."
+                                disabled={isLoading}
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-muted block" htmlFor="websiteUrl">
+                                Personal Website URL
+                            </label>
+                            <input
+                                id="websiteUrl"
+                                type="url"
+                                value={websiteUrl}
+                                onChange={(e) => setWebsiteUrl(e.target.value)}
+                                className="input-field"
+                                placeholder="https://yourdomain.com"
                                 disabled={isLoading}
                             />
                         </div>
