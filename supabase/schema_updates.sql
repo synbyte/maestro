@@ -47,3 +47,26 @@ CREATE POLICY "Courses are viewable by everyone." ON public.user_courses
 DROP POLICY IF EXISTS "Users can manage their own courses." ON public.user_courses;
 CREATE POLICY "Users can manage their own courses." ON public.user_courses
   FOR ALL USING ((select auth.uid()) = user_id);
+-- CREATE FOLLOWS TABLE
+CREATE TABLE IF NOT EXISTS public.follows (
+  follower_id uuid references public.profiles(id) on delete cascade not null,
+  following_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  PRIMARY KEY (follower_id, following_id)
+);
+
+-- Turn on Row Level Security for follows
+ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
+
+-- Follows Policies
+DROP POLICY IF EXISTS "Follows are viewable by everyone." ON public.follows;
+CREATE POLICY "Follows are viewable by everyone." ON public.follows
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users can follow others." ON public.follows;
+CREATE POLICY "Users can follow others." ON public.follows
+  FOR INSERT WITH CHECK ((select auth.uid()) = follower_id);
+
+DROP POLICY IF EXISTS "Users can unfollow others." ON public.follows;
+CREATE POLICY "Users can unfollow others." ON public.follows
+  FOR DELETE USING ((select auth.uid()) = follower_id);

@@ -16,6 +16,9 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [userCourses, setUserCourses] = useState<any[]>([]);
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(false);
     const [activeTab, setActiveTab] = useState("activity");
     const [loading, setLoading] = useState(true);
 
@@ -62,6 +65,31 @@ export default function ProfilePage() {
             
             if (coursesData) {
                 setUserCourses(coursesData);
+            }
+
+            // Fetch followers count
+            const { count: followers } = await supabase
+                .from("follows")
+                .select("*", { count: "exact", head: true })
+                .eq("following_id", profileId);
+            setFollowerCount(followers || 0);
+
+            // Fetch following count
+            const { count: following } = await supabase
+                .from("follows")
+                .select("*", { count: "exact", head: true })
+                .eq("follower_id", profileId);
+            setFollowingCount(following || 0);
+
+            // Check if current user is following
+            if (user && user.id !== profileId) {
+                const { data: followData } = await supabase
+                    .from("follows")
+                    .select("*")
+                    .eq("follower_id", user.id)
+                    .eq("following_id", profileId)
+                    .single();
+                setIsFollowing(!!followData);
             }
 
             setLoading(false);
@@ -112,6 +140,51 @@ export default function ProfilePage() {
         if (postsData) {
             setPosts(postsData);
         }
+
+        // Refresh counts
+        const { count: followers } = await supabase
+            .from("follows")
+            .select("*", { count: "exact", head: true })
+            .eq("following_id", profileId);
+        setFollowerCount(followers || 0);
+
+        const { count: following } = await supabase
+            .from("follows")
+            .select("*", { count: "exact", head: true })
+            .eq("follower_id", profileId);
+        setFollowingCount(following || 0);
+
+        if (currentUser && currentUser.id !== profileId) {
+            const { data: followData } = await supabase
+                .from("follows")
+                .select("*")
+                .eq("follower_id", currentUser.id)
+                .eq("following_id", profileId)
+                .single();
+            setIsFollowing(!!followData);
+        }
+    };
+
+    const toggleFollow = async () => {
+        if (!currentUser || isOwnProfile) return;
+
+        if (isFollowing) {
+            const { error } = await supabase
+                .from("follows")
+                .delete()
+                .eq("follower_id", currentUser.id)
+                .eq("following_id", profileId);
+            if (!error) setIsFollowing(false);
+        } else {
+            const { error } = await supabase
+                .from("follows")
+                .insert({
+                    follower_id: currentUser.id,
+                    following_id: profileId
+                });
+            if (!error) setIsFollowing(true);
+        }
+        handleRefresh();
     };
 
     if (loading) return <div className="flex justify-center p-10"><span className="text-muted">Loading profile...</span></div>;
@@ -160,7 +233,12 @@ export default function ProfilePage() {
                                 Edit Profile
                             </Link>
                         ) : (
-                            <button className="btn btn-primary px-6 py-2 text-sm font-medium">Follow</button>
+                            <button 
+                                onClick={toggleFollow}
+                                className={`btn px-6 py-2 text-sm font-medium transition-all ${isFollowing ? "btn-secondary" : "btn-primary"}`}
+                            >
+                                {isFollowing ? "Unfollow" : "Follow"}
+                            </button>
                         )}
                     </div>
 
@@ -184,8 +262,8 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex flex-wrap gap-4 text-sm text-muted">
-                            <span className="text-foreground font-medium">124 <span className="text-muted font-normal">Following</span></span>
-                            <span className="text-foreground font-medium">89 <span className="text-muted font-normal">Followers</span></span>
+                            <span className="text-foreground font-medium">{followingCount} <span className="text-muted font-normal">Following</span></span>
+                            <span className="text-foreground font-medium">{followerCount} <span className="text-muted font-normal">Followers</span></span>
                             
                             {profile.website_url && (
                                 <a href={profile.website_url} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-blue-400 hover:underline ml-4">

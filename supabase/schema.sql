@@ -66,6 +66,30 @@ drop policy if exists "Users can manage their own courses." on user_courses
 create policy "Users can manage their own courses." on user_courses
   for all using ((select auth.uid()) = user_id);
 
+-- CREATE FOLLOWS TABLE
+create table if not exists public.follows (
+  follower_id uuid references public.profiles(id) on delete cascade not null,
+  following_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (follower_id, following_id)
+);
+
+-- Turn on Row Level Security for follows
+alter table public.follows enable row level security;
+
+-- Follows Policies
+drop policy if exists "Follows are viewable by everyone." on public.follows;
+create policy "Follows are viewable by everyone." on public.follows
+  for select using (true);
+
+drop policy if exists "Users can follow others." on public.follows;
+create policy "Users can follow others." on public.follows
+  for insert with check ((select auth.uid()) = follower_id);
+
+drop policy if exists "Users can unfollow others." on public.follows;
+create policy "Users can unfollow others." on public.follows
+  for delete using ((select auth.uid()) = follower_id);
+
 -- Function and trigger to automatically create profile for new auth.users
 create or replace function public.handle_new_user()
 returns trigger as $$
