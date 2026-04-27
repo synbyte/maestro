@@ -6,7 +6,7 @@ interface UserAvatarProps {
     userId: string;
     src?: string | null;
     name?: string;
-    size?: "sm" | "md" | "lg" | "xl";
+    size?: "xs" | "sm" | "md" | "lg" | "xl";
     className?: string;
 }
 
@@ -15,6 +15,7 @@ export function UserAvatar({ userId, src, name, size = "md", className = "" }: U
     const isOnline = onlineUsers.has(userId);
 
     const sizeClasses = {
+        xs: "w-5 h-5 text-[8px]",
         sm: "w-6 h-6 text-[10px]",
         md: "w-8 h-8 text-xs",
         lg: "w-12 h-12 text-base",
@@ -22,6 +23,7 @@ export function UserAvatar({ userId, src, name, size = "md", className = "" }: U
     };
 
     const dotSizeClasses = {
+        xs: "w-1 h-1 border",
         sm: "w-1.5 h-1.5 border",
         md: "w-2.5 h-2.5 border-2",
         lg: "w-3.5 h-3.5 border-2",
