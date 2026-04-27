@@ -21,30 +21,37 @@ export function StreakTracker() {
             // Get local date in YYYY-MM-DD format
             const today = new Date().toLocaleDateString("en-CA");
             const lastLogin = profile.last_login_date;
+            let currentStreak = profile.current_streak || 0;
             
             if (lastLogin === today) {
-                // Already logged in today, do nothing
+                // If logged in today but streak is still 0, fix it to 1
+                if (currentStreak === 0) {
+                    await supabase
+                        .from("profiles")
+                        .update({ current_streak: 1 })
+                        .eq("id", user.id);
+                }
                 return;
             }
 
-            let newStreak = profile.current_streak || 0;
+            let newStreak = 1; // Default to 1 for a new or broken streak
 
             if (lastLogin) {
                 const todayDate = new Date(today);
                 const lastDate = new Date(lastLogin);
-                const diffTime = Math.abs(todayDate.getTime() - lastDate.getTime());
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                // Calculate difference in days properly
+                const diffTime = todayDate.getTime() - lastDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
                 if (diffDays === 1) {
-                    // Logged in yesterday, increment streak
-                    newStreak += 1;
-                } else {
-                    // Missed a day, reset streak
-                    newStreak = 1;
+                    // Logged in exactly yesterday
+                    newStreak = currentStreak + 1;
+                } else if (diffDays <= 0) {
+                    // This handles weird timezone overlaps where today < lastLogin
+                    newStreak = Math.max(currentStreak, 1);
                 }
-            } else {
-                // First login
-                newStreak = 1;
+                // Otherwise it stays 1 (streak reset)
             }
 
             await supabase
@@ -54,6 +61,12 @@ export function StreakTracker() {
                     current_streak: newStreak
                 })
                 .eq("id", user.id);
+
+            // Award daily login reputation (75 pts)
+            await supabase.rpc('increment_reputation', { 
+                profile_id: user.id, 
+                amount: 75 
+            });
         };
 
         updateStreak();

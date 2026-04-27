@@ -68,6 +68,33 @@ export default function ProfilePage() {
         };
 
         fetchProfileData();
+
+        const channel = supabase
+            .channel(`profile_${profileId}`)
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "posts", filter: `user_id=eq.${profileId}` },
+                () => handleRefresh()
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "comments" },
+                (payload) => {
+                    // Only refresh if the comment belongs to one of the posts we are showing
+                    // For simplicity, we just refresh if any comment change happens
+                    handleRefresh();
+                }
+            )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "reactions" },
+                () => handleRefresh()
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [profileId, supabase, router]);
 
     const handleRefresh = async () => {
@@ -100,7 +127,7 @@ export default function ProfilePage() {
         { label: "Courses", value: completedCoursesCount.toString(), icon: <BookOpen size={16} className="text-blue-500" /> },
         { label: "Projects", value: "12", icon: <Briefcase size={16} className="text-purple-500" /> },
         { label: "Streak", value: `${profile.current_streak || 0} Days`, icon: <Flame size={16} className="text-orange-500" /> },
-        { label: "Reputation", value: "1,250", icon: <Award size={16} className="text-yellow-500" /> }
+        { label: "Reputation", value: (profile.reputation || 0).toLocaleString(), icon: <Award size={16} className="text-yellow-500" /> }
     ];
 
     return (

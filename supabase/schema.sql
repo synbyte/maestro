@@ -18,8 +18,19 @@ create table public.profiles (
   is_onboarded boolean default false,
   current_streak integer default 0,
   last_login_date date,
+  reputation integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- CREATE FUNCTION FOR ATOMIC REPUTATION INCREMENTS
+create or replace function public.increment_reputation(profile_id uuid, amount int)
+returns void as $$
+begin
+  update public.profiles
+  set reputation = reputation + amount
+  where id = profile_id;
+end;
+$$ language plpgsql security definer;
 
 -- Turn on Row Level Security for profiles
 alter table public.profiles enable row level security;
@@ -46,8 +57,12 @@ create table public.user_courses (
 alter table public.user_courses enable row level security;
 
 -- User Courses Policies
+drop policy if exists "Courses are viewable by everyone." on user_courses;
 create policy "Courses are viewable by everyone." on user_courses
   for select using (true);
+
+drop policy if exists "Users can manage their own courses." on user_courses
+  for all using ((select auth.uid()) = user_id);
 create policy "Users can manage their own courses." on user_courses
   for all using ((select auth.uid()) = user_id);
 

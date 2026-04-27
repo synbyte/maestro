@@ -13,7 +13,18 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS start_date text,
   ADD COLUMN IF NOT EXISTS is_onboarded boolean default false,
   ADD COLUMN IF NOT EXISTS current_streak integer default 0,
-  ADD COLUMN IF NOT EXISTS last_login_date date;
+  ADD COLUMN IF NOT EXISTS last_login_date date,
+  ADD COLUMN IF NOT EXISTS reputation integer default 0;
+
+-- CREATE FUNCTION FOR ATOMIC REPUTATION INCREMENTS
+CREATE OR REPLACE FUNCTION public.increment_reputation(profile_id uuid, amount int)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles
+  SET reputation = reputation + amount
+  WHERE id = profile_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- CREATE USER COURSES TABLE
 CREATE TABLE IF NOT EXISTS public.user_courses (
@@ -29,7 +40,10 @@ CREATE TABLE IF NOT EXISTS public.user_courses (
 ALTER TABLE public.user_courses ENABLE ROW LEVEL SECURITY;
 
 -- User Courses Policies
+DROP POLICY IF EXISTS "Courses are viewable by everyone." ON public.user_courses;
 CREATE POLICY "Courses are viewable by everyone." ON public.user_courses
   FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users can manage their own courses." ON public.user_courses;
 CREATE POLICY "Users can manage their own courses." ON public.user_courses
   FOR ALL USING ((select auth.uid()) = user_id);

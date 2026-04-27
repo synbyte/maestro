@@ -60,6 +60,11 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                 user_id: user.id,
                 reaction_type: reactionType
             });
+            // Award reputation (10 pts)
+            await supabase.rpc('increment_reputation', { 
+                profile_id: user.id, 
+                amount: 10 
+            });
             if (onRefresh) onRefresh();
         }
     };

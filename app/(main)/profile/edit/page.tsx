@@ -95,7 +95,9 @@ export default function EditProfile() {
             setError(error.message);
         } else {
             setSuccess(true);
-            setTimeout(() => setSuccess(false), 3000);
+            setTimeout(() => {
+                router.push(`/profile/${user.id}`);
+            }, 1500);
         }
         setIsLoading(false);
     };
