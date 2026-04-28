@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Bell } from "lucide-react";
 
 export default function Sidebar() {
     const router = useRouter();
@@ -14,6 +15,7 @@ export default function Sidebar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
     const [sidebarUserId, setSidebarUserId] = useState<string | null>(null);
 
@@ -31,12 +33,22 @@ export default function Sidebar() {
                 .single();
             setProfile(data);
 
-            const { count } = await supabase
+            // Fetch unread messages count
+            const { count: msgCount } = await supabase
                 .from("messages")
                 .select("*", { count: "exact", head: true })
                 .eq("recipient_id", user.id)
                 .eq("is_read", false);
-            setUnreadCount(count ?? 0);
+            setUnreadCount(msgCount ?? 0);
+
+            // Fetch unread notifications count
+            const { count: notifCount } = await supabase
+                .from("notifications")
+                .select("*", { count: "exact", head: true })
+                .eq("user_id", user.id)
+                .eq("is_read", false);
+            setUnreadNotifCount(notifCount ?? 0);
+
             setSidebarUserId(user.id);
         };
         run();
@@ -46,7 +58,7 @@ export default function Sidebar() {
     useEffect(() => {
         if (!sidebarUserId) return;
 
-        const channel = supabase.channel(`sidebar_inbox_${sidebarUserId}`);
+        const channel = supabase.channel(`sidebar_data_${sidebarUserId}`);
 
         channel
             .on("postgres_changes", {
@@ -67,6 +79,25 @@ export default function Sidebar() {
                     .eq("recipient_id", sidebarUserId)
                     .eq("is_read", false);
                 setUnreadCount(count ?? 0);
+            })
+            .on("postgres_changes", {
+                event: "INSERT",
+                schema: "public",
+                table: "notifications",
+                filter: `user_id=eq.${sidebarUserId}`,
+            }, () => setUnreadNotifCount(prev => prev + 1))
+            .on("postgres_changes", {
+                event: "UPDATE",
+                schema: "public",
+                table: "notifications",
+                filter: `user_id=eq.${sidebarUserId}`,
+            }, async () => {
+                const { count } = await supabase
+                    .from("notifications")
+                    .select("*", { count: "exact", head: true })
+                    .eq("user_id", sidebarUserId)
+                    .eq("is_read", false);
+                setUnreadNotifCount(count ?? 0);
             });
 
         channel.subscribe();
@@ -96,6 +127,7 @@ export default function Sidebar() {
                     >
                         Home
                     </Link>
+
                     <Link
                         href="/inbox"
                         onClick={() => setMobileMenuOpen(false)}
@@ -103,7 +135,7 @@ export default function Sidebar() {
                     >
                         <span>Inbox</span>
                         {unreadCount > 0 && (
-                            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                            <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                                 {unreadCount > 99 ? "99+" : unreadCount}
                             </span>
                         )}
@@ -130,7 +162,7 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            <div className="p-4 border-t border-[#333] relative">
+            <div className="p-4 border-t border-[#333] relative flex items-center gap-1">
                 {menuOpen && (
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
@@ -154,7 +186,7 @@ export default function Sidebar() {
 
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="w-full flex items-center gap-3 p-2 rounded hover:bg-[#222] transition-colors text-left"
+                    className="flex-1 flex items-center gap-3 p-2 rounded hover:bg-[#222] transition-colors text-left overflow-hidden"
                 >
                     {profile?.avatar_url ? (
                         <img src={profile.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-[#333]" />
@@ -170,6 +202,20 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </button>
+
+                <Link
+                    href="/notifications"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`p-2 rounded hover:bg-[#222] transition-colors relative ${pathname === '/notifications' ? 'text-accent bg-[#222]' : 'text-[#aaaaa5]'}`}
+                    title="Notifications"
+                >
+                    <Bell size={20} />
+                    {unreadNotifCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[15px] h-[15px] flex items-center justify-center border border-[#121212] shadow-lg">
+                            {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+                        </span>
+                    )}
+                </Link>
             </div>
         </>
     );
@@ -187,11 +233,25 @@ export default function Sidebar() {
                     <img src="/logo.png" alt="Maestro Mix" className="w-8 h-8 object-contain" />
                     <span className="text-lg font-medium tracking-tight">Maestro Mix</span>
                 </Link>
-                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#ecebe4]">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <div className="flex items-center gap-2">
+                    {unreadNotifCount > 0 && (
+                        <Link
+                            href="/notifications"
+                            className="p-2 text-[#aaaaa5] relative"
+                            title="Notifications"
+                        >
+                            <Bell size={20} />
+                            <span className="absolute top-1 right-1 bg-blue-600 text-white text-[8px] font-bold px-1 rounded-full min-w-[14px] h-[14px] flex items-center justify-center border border-[#121212]">
+                                {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+                            </span>
+                        </Link>
+                    )}
+                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#ecebe4]">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Slide-over Sidebar */}
