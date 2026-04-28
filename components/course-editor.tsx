@@ -25,6 +25,7 @@ export function CourseEditor({ userId }: { userId: string }) {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [isSavingIndex, setIsSavingIndex] = useState<number | null>(null);
+    const [validationError, setValidationError] = useState<string | null>(null);
     // Store a snapshot of the original db values so we can detect progress changes
     const originalRef = useRef<Record<string, { week_number: number; lesson_number: number; is_completed: boolean }>>({});
 
@@ -72,7 +73,11 @@ export function CourseEditor({ userId }: { userId: string }) {
     const updateCourse = (index: number, field: string, value: any) => {
         setCourses(prev => {
             const next = [...prev];
-            next[index] = { ...next[index], [field]: value };
+            let finalValue = value;
+            if (field === "course_name" && typeof value === "string") {
+                finalValue = value.toUpperCase().replace(/\s/g, "");
+            }
+            next[index] = { ...next[index], [field]: finalValue };
             return next;
         });
     };
@@ -80,6 +85,15 @@ export function CourseEditor({ userId }: { userId: string }) {
     const saveCourse = async (index: number) => {
         const course = courses[index];
         if (!course.course_name.trim() || isSavingIndex === index) return;
+
+        // Validate Course Name Format (e.g. PY101)
+        const courseCodeRegex = /^[A-Z]{2,4}\d{2,4}$/;
+        if (!courseCodeRegex.test(course.course_name.toUpperCase().trim())) {
+            setValidationError("Use course codes (e.g. PY101) instead of names.");
+            return;
+        } else {
+            setValidationError(null);
+        }
 
         setIsSavingIndex(index);
         try {
@@ -165,6 +179,12 @@ export function CourseEditor({ userId }: { userId: string }) {
 
     return (
         <div className="space-y-4">
+            {validationError && (
+                <div className="p-2 text-xs bg-red-900/20 border border-red-900/50 text-red-500 rounded">
+                    {validationError}
+                </div>
+            )}
+
             {courses.length === 0 && (
                 <div className="text-sm text-muted py-4 border border-dashed border-border rounded text-center">
                     No courses added yet.

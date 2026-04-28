@@ -63,6 +63,14 @@ export default function Onboarding() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
+
+        // Validate Course Name Format (e.g. PY101)
+        const courseCodeRegex = /^[A-Z]{2,4}\d{2,4}$/;
+        if (!courseCodeRegex.test(courseName.toUpperCase().trim())) {
+            setError("Please use the course code format (e.g. PY101, CS50) instead of the full name.");
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
@@ -225,9 +233,9 @@ export default function Onboarding() {
                             id="courseName"
                             type="text"
                             value={courseName}
-                            onChange={(e) => setCourseName(e.target.value)}
+                            onChange={(e) => setCourseName(e.target.value.toUpperCase().trim())}
                             className="input-field"
-                            placeholder="e.g. PY101, AI Fundamentals"
+                            placeholder="e.g. PY101, CS50"
                             required
                         />
                     </div>
