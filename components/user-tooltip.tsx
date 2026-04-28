@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { UserAvatar } from "./user-avatar";
 import { Award, Flame, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UserTooltipProps {
     userId: string;
@@ -54,7 +55,7 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
     const handleMouseLeave = () => {
         timerRef.current = setTimeout(() => {
             setShow(false);
-        }, 150);
+        }, 100);
     };
 
     const fetchData = async () => {
@@ -94,71 +95,90 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
         >
             {children}
 
-            {show && (
-                <div className={`
-                    absolute left-1/2 -translate-x-1/2 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-2xl z-[100] animate-fade-in overflow-hidden
-                    ${tooltipPosition === "top" ? "bottom-full mb-2" : "top-full mt-2"}
-                `}>
-                    {loading && !profile ? (
-                        <div className="p-4 text-center text-xs text-muted">Loading...</div>
-                    ) : profile ? (
-                        <div className="flex flex-col">
-                            {/* Banner area */}
-                            <div className="h-12 w-full bg-gradient-to-r from-primary/20 to-[#121212]" />
+            <AnimatePresence>
+                {show && (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, x: "-50%", y: tooltipPosition === "top" ? 10 : -10 }}
+                        animate={{ opacity: 1, scale: 1, x: "-50%", y: 0 }}
+                        exit={{ 
+                            opacity: 0, 
+                            scale: 0.95, 
+                            x: "-50%", 
+                            y: tooltipPosition === "top" ? 5 : -5,
+                            pointerEvents: "none"
+                        }}
+                        transition={{ 
+                            type: "spring", 
+                            damping: 20, 
+                            stiffness: 300,
+                            opacity: { duration: 0.15 }
+                        }}
+                        className={`
+                            absolute left-1/2 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-2xl z-[100]
+                            ${tooltipPosition === "top" ? "bottom-full mb-2" : "top-full mt-2"}
+                        `}
+                    >
+                        {loading && !profile ? (
+                            <div className="p-4 text-center text-xs text-muted">Loading...</div>
+                        ) : profile ? (
+                            <div className="flex flex-col">
+                                {/* Banner area */}
+                                <div className="h-12 w-full bg-gradient-to-r from-primary/20 to-[#121212]" />
 
-                            <div className="px-4 pb-4 -mt-6">
-                                <div className="flex justify-between items-end mb-2">
-                                    <div className="p-0.5 bg-[#1a1a1a] rounded-full inline-block">
-                                        <UserAvatar userId={profile.id} src={profile.avatar_url} name={profile.display_name} size="lg" />
+                                <div className="px-4 pb-4 -mt-6">
+                                    <div className="flex justify-between items-end mb-2">
+                                        <div className="p-0.5 bg-[#1a1a1a] rounded-full inline-block">
+                                            <UserAvatar userId={profile.id} src={profile.avatar_url} name={profile.display_name} size="lg" />
+                                        </div>
+                                        <Link href={`/profile/${profile.id}`} className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded font-medium hover:opacity-90">
+                                            View Profile
+                                        </Link>
                                     </div>
-                                    <Link href={`/profile/${profile.id}`} className="text-[10px] bg-primary text-primary-foreground px-2 py-0.5 rounded font-medium hover:opacity-90">
-                                        View Profile
-                                    </Link>
+
+                                    <div className="mb-3">
+                                        <div className="text-sm font-semibold text-foreground truncate">{profile.display_name}</div>
+                                        <div className="text-[11px] text-muted truncate">{profile.headline || "Maestro Mix Student"}</div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 mb-3">
+                                        <div className="bg-[#121212] p-2 rounded border border-[#333] flex flex-col">
+                                            <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-0.5">
+                                                <Flame size={10} className="text-orange-500" /> Streak
+                                            </div>
+                                            <div className="text-xs font-bold text-foreground">{profile.current_streak || 0} Days</div>
+                                        </div>
+                                        <div className="bg-[#121212] p-2 rounded border border-[#333] flex flex-col">
+                                            <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-0.5">
+                                                <Award size={10} className="text-yellow-500" /> Rep
+                                            </div>
+                                            <div className="text-xs font-bold text-foreground">{(profile.reputation || 0).toLocaleString()}</div>
+                                        </div>
+                                    </div>
+
+                                    {currentCourse && (
+                                        <div className="bg-[#121212] p-2 rounded border border-[#333]">
+                                            <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-1">
+                                                <BookOpen size={10} className="text-blue-500" /> Currently Learning
+                                            </div>
+                                            <div className="text-[10px] font-medium text-foreground truncate uppercase">{currentCourse.course_name}</div>
+                                            <div className="text-[10px] text-muted">
+                                                Week {currentCourse.week_number} · Lesson {currentCourse.lesson_number}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-
-                                <div className="mb-3">
-                                    <div className="text-sm font-semibold text-foreground truncate">{profile.display_name}</div>
-                                    <div className="text-[11px] text-muted truncate">{profile.headline || "Maestro Mix Student"}</div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-2 mb-3">
-                                    <div className="bg-[#121212] p-2 rounded border border-[#333] flex flex-col">
-                                        <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-0.5">
-                                            <Flame size={10} className="text-orange-500" /> Streak
-                                        </div>
-                                        <div className="text-xs font-bold text-foreground">{profile.current_streak || 0} Days</div>
-                                    </div>
-                                    <div className="bg-[#121212] p-2 rounded border border-[#333] flex flex-col">
-                                        <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-0.5">
-                                            <Award size={10} className="text-yellow-500" /> Rep
-                                        </div>
-                                        <div className="text-xs font-bold text-foreground">{(profile.reputation || 0).toLocaleString()}</div>
-                                    </div>
-                                </div>
-
-                                {currentCourse && (
-                                    <div className="bg-[#121212] p-2 rounded border border-[#333]">
-                                        <div className="flex items-center gap-1 text-[9px] text-muted uppercase tracking-wider mb-1">
-                                            <BookOpen size={10} className="text-blue-500" /> Currently Learning
-                                        </div>
-                                        <div className="text-[10px] font-medium text-foreground truncate uppercase">{currentCourse.course_name}</div>
-                                        <div className="text-[10px] text-muted">
-                                            Week {currentCourse.week_number} · Lesson {currentCourse.lesson_number}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-                        </div>
-                    ) : null}
+                        ) : null}
 
-                    {/* Tooltip arrow */}
-                    {tooltipPosition === "top" ? (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-[#333]" />
-                    ) : (
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 border-8 border-transparent border-b-[#333]" />
-                    )}
-                </div>
-            )}
+                        {/* Tooltip arrow */}
+                        {tooltipPosition === "top" ? (
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-[#333]" />
+                        ) : (
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 border-8 border-transparent border-b-[#333]" />
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

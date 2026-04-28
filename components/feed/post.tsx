@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { UserInfo } from "@/components/user-info";
 import { Rocket, Calendar, MapPin, ExternalLink, Award, Globe } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -85,7 +86,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     };
 
     return (
-        <div className="bg-transparent border border-border p-5 rounded group/post relative">
+        <div className="bg-transparent border border-border p-5 rounded group/post relative hover:z-50 transition-[z-index] duration-0">
             <div className="flex justify-between mb-3">
                 <UserInfo
                     userId={post.user_id}
@@ -250,26 +251,34 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                     React
                 </button>
 
-                {reactionPicker && (
-                    <>
-                        <div
-                            className="fixed inset-0 z-0"
-                            onClick={() => setReactionPicker(false)}
-                        />
-                        <div className="absolute top-10 left-0 bg-[#222] border border-[#444] rounded p-2 flex gap-2 z-10 shadow-lg animate-fade-in">
-                            {REACTION_TYPES.map(rt => (
-                                <button
-                                    key={rt.value}
-                                    onClick={() => handleReact(rt.value)}
-                                    className="hover:bg-[#333] p-1.5 rounded transition-colors text-base relative z-10"
-                                    title={rt.label}
-                                >
-                                    {rt.emoji}
-                                </button>
-                            ))}
-                        </div>
-                    </>
-                )}
+                <AnimatePresence>
+                    {reactionPicker && (
+                        <>
+                            <div
+                                className="fixed inset-0 z-0"
+                                onClick={() => setReactionPicker(false)}
+                            />
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.8, y: 10, pointerEvents: "none" }}
+                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                className="absolute top-10 left-0 bg-[#222] border border-[#444] rounded p-2 flex gap-2 z-10 shadow-lg"
+                            >
+                                {REACTION_TYPES.map(rt => (
+                                    <button
+                                        key={rt.value}
+                                        onClick={() => handleReact(rt.value)}
+                                        className="hover:bg-[#333] p-1.5 rounded transition-colors text-base relative z-10"
+                                        title={rt.label}
+                                    >
+                                        {rt.emoji}
+                                    </button>
+                                ))}
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
 
                 <button
                     onClick={() => setExpandedComments(!expandedComments)}
@@ -279,14 +288,46 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                 </button>
             </div>
 
-            <div
-                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${expandedComments ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    }`}
-            >
-                <div className="overflow-hidden">
-                    <CommentSection postId={post.id} comments={post.comments} user={user} onRefresh={onRefresh} />
-                </div>
-            </div>
+            <AnimatePresence>
+                {expandedComments && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0, overflow: "hidden" }}
+                        animate={{ 
+                            height: expandedComments ? "auto" : 0, 
+                            opacity: expandedComments ? 1 : 0,
+                            overflow: expandedComments ? "visible" : "hidden",
+                            transition: {
+                                height: {
+                                    duration: 0.4,
+                                    ease: [0.04, 0.62, 0.23, 0.98]
+                                },
+                                opacity: {
+                                    duration: 0.25,
+                                    delay: 0.05
+                                }
+                            }
+                        }}
+                        exit={{ 
+                            height: 0, 
+                            opacity: 0,
+                            overflow: "hidden",
+                            transition: {
+                                height: {
+                                    duration: 0.3
+                                },
+                                opacity: {
+                                    duration: 0.2
+                                }
+                            }
+                        }}
+                        style={{ transformOrigin: "top" }}
+                    >
+                        <div className="overflow-visible">
+                            <CommentSection postId={post.id} comments={post.comments} user={user} onRefresh={onRefresh} />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
