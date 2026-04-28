@@ -17,7 +17,9 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
     const [currentCourse, setCurrentCourse] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
+    const [tooltipPosition, setTooltipPosition] = useState<"top" | "bottom">("top");
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (show && !profile) {
@@ -33,6 +35,19 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
 
     const handleMouseEnter = () => {
         if (timerRef.current) clearTimeout(timerRef.current);
+
+        // Smart positioning
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            // If the top of the element is less than 300px from the top of the viewport,
+            // show the tooltip below the element instead of above it.
+            if (rect.top < 300) {
+                setTooltipPosition("bottom");
+            } else {
+                setTooltipPosition("top");
+            }
+        }
+
         setShow(true);
     };
 
@@ -44,14 +59,14 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
 
     const fetchData = async () => {
         setLoading(true);
-        
+
         // Fetch profile
         const { data: profileData } = await supabase
             .from("profiles")
             .select("*")
             .eq("id", userId)
             .single();
-        
+
         if (profileData) setProfile(profileData);
 
         // Fetch current course/lesson
@@ -62,31 +77,35 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
             .eq("is_completed", false)
             .order("created_at", { ascending: false })
             .limit(1);
-        
+
         if (courseData && courseData.length > 0) {
             setCurrentCourse(courseData[0]);
         }
-        
+
         setLoading(false);
     };
 
     return (
-        <div 
+        <div
+            ref={containerRef}
             className="relative inline-block"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             {children}
-            
+
             {show && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-2xl z-[100] animate-fade-in overflow-hidden">
+                <div className={`
+                    absolute left-1/2 -translate-x-1/2 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-2xl z-[100] animate-fade-in overflow-hidden
+                    ${tooltipPosition === "top" ? "bottom-full mb-2" : "top-full mt-2"}
+                `}>
                     {loading && !profile ? (
                         <div className="p-4 text-center text-xs text-muted">Loading...</div>
                     ) : profile ? (
                         <div className="flex flex-col">
                             {/* Banner area */}
                             <div className="h-12 w-full bg-gradient-to-r from-primary/20 to-[#121212]" />
-                            
+
                             <div className="px-4 pb-4 -mt-6">
                                 <div className="flex justify-between items-end mb-2">
                                     <div className="p-0.5 bg-[#1a1a1a] rounded-full inline-block">
@@ -96,7 +115,7 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
                                         View Profile
                                     </Link>
                                 </div>
-                                
+
                                 <div className="mb-3">
                                     <div className="text-sm font-semibold text-foreground truncate">{profile.display_name}</div>
                                     <div className="text-[11px] text-muted truncate">{profile.headline || "Maestro Mix Student"}</div>
@@ -131,9 +150,13 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
                             </div>
                         </div>
                     ) : null}
-                    
+
                     {/* Tooltip arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-[#333]" />
+                    {tooltipPosition === "top" ? (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-[#333]" />
+                    ) : (
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 border-8 border-transparent border-b-[#333]" />
+                    )}
                 </div>
             )}
         </div>

@@ -63,8 +63,8 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                 reaction_type: reactionType
             });
             // Award reputation (10 pts)
-            await supabase.rpc('increment_reputation', { 
-                profile_id: user.id, 
+            await supabase.rpc('increment_reputation', {
+                profile_id: user.id,
                 amount: 10,
                 reason: 'for reacting to a post! ✨'
             });
@@ -87,7 +87,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     return (
         <div className="bg-transparent border border-border p-5 rounded group/post relative">
             <div className="flex justify-between mb-3">
-                <UserInfo 
+                <UserInfo
                     userId={post.user_id}
                     avatarUrl={post.profiles?.avatar_url}
                     displayName={post.profiles?.display_name}
@@ -97,18 +97,18 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                 />
                 {user?.id === post.user_id && (
                     <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/post:opacity-100 transition-opacity">
-                        <button 
+                        <button
                             onClick={() => {
                                 setIsEditing(!isEditing);
                                 setEditContent(post.content);
-                            }} 
+                            }}
                             className="text-sm text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
                             title="Edit Post"
                         >
                             Edit
                         </button>
-                        <button 
-                            onClick={handleDeletePost} 
+                        <button
+                            onClick={handleDeletePost}
                             className="text-lg text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
                             title="Delete Post"
                         >
@@ -137,8 +137,8 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                         <div className="p-1">
                             {post.metadata?.project_image && (
                                 <div className="h-40 w-full overflow-hidden relative rounded-t-lg">
-                                    <img 
-                                        src={post.metadata.project_image} 
+                                    <img
+                                        src={post.metadata.project_image}
                                         alt={post.metadata.project_name}
                                         className="w-full h-full object-cover transition-transform group-hover/card:scale-105 duration-700"
                                     />
@@ -168,7 +168,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                                 </div>
                             )}
                             {post.metadata?.project_url && (
-                                <a 
+                                <a
                                     href={post.metadata.project_url}
                                     target="_blank"
                                     rel="noreferrer"
@@ -199,7 +199,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                                 <Award size={24} className="text-blue-500" />
                             </div>
                         </div>
-                        
+
                         <div className="space-y-3 mb-5">
                             <div className="flex items-center gap-3 text-sm text-muted">
                                 <div className="w-8 h-8 rounded-lg bg-[#222] flex items-center justify-center text-blue-400">
@@ -223,7 +223,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                             </div>
                         )}
 
-                        <Link 
+                        <Link
                             href="/events"
                             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-blue-400 text-sm font-medium hover:bg-blue-500/20 transition-all"
                         >
@@ -252,9 +252,9 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
 
                 {reactionPicker && (
                     <>
-                        <div 
-                            className="fixed inset-0 z-0" 
-                            onClick={() => setReactionPicker(false)} 
+                        <div
+                            className="fixed inset-0 z-0"
+                            onClick={() => setReactionPicker(false)}
                         />
                         <div className="absolute top-10 left-0 bg-[#222] border border-[#444] rounded p-2 flex gap-2 z-10 shadow-lg animate-fade-in">
                             {REACTION_TYPES.map(rt => (
@@ -279,10 +279,9 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                 </button>
             </div>
 
-            <div 
-                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
-                    expandedComments ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                }`}
+            <div
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${expandedComments ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                    }`}
             >
                 <div className="overflow-hidden">
                     <CommentSection postId={post.id} comments={post.comments} user={user} onRefresh={onRefresh} />

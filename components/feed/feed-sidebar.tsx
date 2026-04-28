@@ -39,7 +39,7 @@ export function FeedSidebar() {
                 const userStartDate = new Date(profile.start_date + "T12:00:00");
                 const year = userStartDate.getFullYear();
                 const month = userStartDate.getMonth();
-                
+
                 // Get range for that month
                 const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
                 const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
@@ -144,10 +144,10 @@ export function FeedSidebar() {
                                         name={buddy.display_name}
                                         size="md"
                                     />
-                                    <div className="overflow-hidden">
+                                    <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-foreground group-hover:underline truncate">{buddy.display_name}</div>
-                                        <div className="text-[11px] text-muted">
-                                            {buddy.course_name.toUpperCase()} · W{buddy.week_number} L{buddy.lesson_number}
+                                        <div className="text-[11px] text-muted truncate uppercase tracking-tight">
+                                            {buddy.course_name} · W{buddy.week_number} L{buddy.lesson_number}
                                         </div>
                                     </div>
                                 </Link>
@@ -159,7 +159,8 @@ export function FeedSidebar() {
 
             {/* Cohort Members */}
             <div>
-                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-4">Cohort Members</h2>
+                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">Cohort Members</h2>
+                <p className="text-[11px] text-muted mb-4">Students who started with you</p>
                 <div className="space-y-4">
                     {loadingMembers ? (
                         <div className="text-xs text-muted">Loading...</div>
@@ -192,9 +193,9 @@ function CohortMember({ id, name, focus, avatar }: { id: string; name: string; f
         <UserTooltip userId={id}>
             <Link href={`/profile/${id}`} className="flex items-center gap-3 group cursor-pointer">
                 <UserAvatar userId={id} src={avatar} name={name} size="md" />
-                <div className="overflow-hidden">
+                <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground group-hover:underline truncate">{name}</div>
-                    <div className="text-[11px] text-muted line-clamp-1">{focus}</div>
+                    <div className="text-[11px] text-muted truncate">{focus}</div>
                 </div>
             </Link>
         </UserTooltip>
