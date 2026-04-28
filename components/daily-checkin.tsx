@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useReputation } from "@/components/reputation-provider";
 
 const STORAGE_KEY = "maestro_checkin_date";
 
@@ -17,6 +18,7 @@ interface CourseCheckIn {
 
 export function DailyCheckIn() {
     const supabase = createClient();
+    const { triggerRepPop } = useReputation();
     const [show, setShow] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [courses, setCourses] = useState<CourseCheckIn[]>([]);
@@ -83,10 +85,13 @@ export function DailyCheckIn() {
         setTimeout(() => setShow(false), 500);
     };
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (e: React.MouseEvent) => {
         if (!user) return;
         setSaving(true);
         const today = new Date().toLocaleDateString("en-CA");
+
+        // Trigger visual feedback
+        triggerRepPop(e.clientX, e.clientY, 10);
 
         for (const course of courses) {
             const weekAdvanced = course.new_week > course.week_number;
@@ -201,7 +206,7 @@ export function DailyCheckIn() {
                             Keep As Is
                         </button>
                         <button
-                            onClick={handleUpdate}
+                            onClick={(e) => handleUpdate(e)}
                             disabled={saving}
                             className="btn btn-primary flex-1 py-2.5 text-sm"
                         >

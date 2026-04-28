@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 
 import { Toaster } from "sonner";
 import { NotificationsProvider } from "@/components/notifications-provider";
+import { ReputationProvider } from "@/components/reputation-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +39,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#121212] text-[#ecebe4]">
         <NotificationsProvider>
-          <main className="flex-1 flex flex-col">
-            {children}
-            <Analytics />
-          </main>
+          <ReputationProvider>
+            <main className="flex-1 flex flex-col">
+              {children}
+              <Analytics />
+            </main>
+          </ReputationProvider>
         </NotificationsProvider>
         <Toaster theme="dark" position="bottom-right" closeButton richColors />
       </body>

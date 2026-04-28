@@ -1,4 +1,4 @@
--- UPDATE REPUTATION FUNCTION TO INCLUDE NOTIFICATIONS
+-- UPDATE REPUTATION FUNCTION TO REMOVE NOTIFICATIONS (as requested)
 CREATE OR REPLACE FUNCTION public.increment_reputation(profile_id uuid, amount int, reason text DEFAULT 'for being awesome')
 RETURNS void AS $$
 BEGIN
@@ -6,7 +6,6 @@ BEGIN
   SET reputation = reputation + amount
   WHERE id = profile_id;
   
-  INSERT INTO public.notifications (user_id, type, title, content)
-  VALUES (profile_id, 'reputation', 'Reputation Earned!', 'You earned ' || amount || ' points ' || reason);
+  -- Notification block removed in favor of the new visual "pop" system
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

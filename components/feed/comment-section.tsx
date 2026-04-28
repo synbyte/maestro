@@ -4,9 +4,11 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Comment } from "./comment";
 import { Code } from "lucide-react";
+import { useReputation } from "@/components/reputation-provider";
 
 export function CommentSection({ postId, comments, user, onRefresh }: { postId: string, comments: any[], user: any, onRefresh?: () => void }) {
     const supabase = createClient();
+    const { triggerRepPop } = useReputation();
     const [commentInput, setCommentInput] = useState("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -23,7 +25,7 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
         }
     };
 
-    const handleCommentSubmit = async () => {
+    const handleCommentSubmit = async (e: React.MouseEvent) => {
         if (!user || !commentInput.trim()) return;
 
         const { error } = await supabase
@@ -35,7 +37,10 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
             });
 
         if (!error) {
-            // Award reputation (25 pts)
+            // Trigger visual feedback
+            triggerRepPop(e.clientX, e.clientY, 5);
+
+            // Award reputation (5 pts)
             await supabase.rpc('increment_reputation', { 
                 profile_id: user.id, 
                 amount: 5,
@@ -74,7 +79,7 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
                         <Code size={16} />
                     </button>
                     <button
-                        onClick={handleCommentSubmit}
+                        onClick={(e) => handleCommentSubmit(e)}
                         className="btn btn-secondary text-xs px-3 py-1.5"
                         disabled={!user || !commentInput.trim()}
                     >

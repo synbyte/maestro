@@ -3,11 +3,10 @@
 import { useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Mail, Zap, Calendar } from "lucide-react";
+import { Mail, Zap, Calendar, Heart, MessageSquare, Bell } from "lucide-react";
 
 export function NotificationsProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient();
-    const isSubscribed = useRef(false);
 
     useEffect(() => {
         let channel: any = null;
@@ -21,28 +20,18 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
                 .channel('realtime_notifications')
                 .on(
                     'postgres_changes',
-                    { event: 'INSERT', schema: 'public', table: 'messages' },
-                    (payload) => {
-                        if (payload.new.recipient_id === user.id) {
-                            toast.message("New Mail!", {
-                                description: "You've received a new direct message.",
-                                icon: <Mail className="w-4 h-4 text-accent" />,
-                            });
-                        }
-                    }
-                )
-                .on(
-                    'postgres_changes',
                     { event: 'INSERT', schema: 'public', table: 'notifications' },
                     (payload) => {
                         if (payload.new.user_id === user.id) {
                             const { type, title, content } = payload.new;
                             
-                            let icon = <Zap className="w-4 h-4 text-accent" />;
-                            if (type === 'message') icon = <Mail className="w-4 h-4 text-accent" />;
-                            if (type === 'event') icon = <Calendar className="w-4 h-4 text-accent" />;
+                            let icon = <Bell className="w-4 h-4 text-accent" />;
+                            if (type === 'message') icon = <Mail className="w-4 h-4 text-blue-400" />;
+                            if (type === 'event') icon = <Calendar className="w-4 h-4 text-purple-400" />;
+                            if (type === 'comment') icon = <MessageSquare className="w-4 h-4 text-green-400" />;
+                            if (type === 'reaction') icon = <Heart className="w-4 h-4 text-red-400" />;
 
-                            toast.success(title, {
+                            toast(title, {
                                 description: content,
                                 icon: icon,
                                 duration: 5000,

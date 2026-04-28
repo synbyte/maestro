@@ -9,6 +9,7 @@ import Link from "next/link";
 import { UserInfo } from "@/components/user-info";
 import { Rocket, Calendar, MapPin, ExternalLink, Award, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useReputation } from "@/components/reputation-provider";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
@@ -19,6 +20,7 @@ const REACTION_TYPES = [
 
 export function Post({ post, user, onRefresh }: { post: any, user: any, onRefresh?: () => void }) {
     const supabase = createClient();
+    const { triggerRepPop } = useReputation();
     const [expandedComments, setExpandedComments] = useState(false);
     const [reactionPicker, setReactionPicker] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -48,7 +50,7 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
         }
     };
 
-    const handleReact = async (reactionType: string) => {
+    const handleReact = async (reactionType: string, e?: React.MouseEvent) => {
         if (!user) return;
         setReactionPicker(false);
 
@@ -58,6 +60,11 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
             await supabase.from("reactions").delete().eq("id", existing.id);
             if (onRefresh) onRefresh();
         } else {
+            // Trigger visual feedback if we have event data
+            if (e) {
+                triggerRepPop(e.clientX, e.clientY, 10);
+            }
+
             await supabase.from("reactions").insert({
                 post_id: post.id,
                 user_id: user.id,
@@ -268,8 +275,8 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                                 {REACTION_TYPES.map(rt => (
                                     <button
                                         key={rt.value}
-                                        onClick={() => handleReact(rt.value)}
-                                        className="hover:bg-[#333] p-1.5 rounded transition-colors text-base relative z-10"
+                                        onClick={(e) => handleReact(rt.value, e)}
+                                        className="hover:bg-[#333] p-1.5 rounded transition-colors flex flex-col items-center gap-1 group/btn"
                                         title={rt.label}
                                     >
                                         {rt.emoji}

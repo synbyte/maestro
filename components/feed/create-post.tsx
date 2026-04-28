@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Code } from "lucide-react";
+import { useReputation } from "@/components/reputation-provider";
 
 export function CreatePost({ user }: { user: any }) {
     const supabase = createClient();
+    const { triggerRepPop } = useReputation();
     const [postText, setPostText] = useState("");
+    const [lastClick, setLastClick] = useState({ x: 0, y: 0 });
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Tab') {
@@ -36,6 +39,11 @@ export function CreatePost({ user }: { user: any }) {
         if (error) {
             alert("Error creating post: " + error.message);
         } else {
+            // Trigger visual feedback
+            if (lastClick.x !== 0) {
+                triggerRepPop(lastClick.x, lastClick.y, 10);
+            }
+
             // Award reputation (10 pts)
             await supabase.rpc('increment_reputation', {
                 profile_id: user.id,
@@ -72,7 +80,12 @@ export function CreatePost({ user }: { user: any }) {
                             {user ? "Supports markdown" : "Log in to post"}
                         </span>
                     </div>
-                    <button type="submit" className="btn btn-primary px-4 py-1.5 text-sm" disabled={!postText.trim() || !user}>
+                    <button 
+                        type="submit" 
+                        onClick={(e) => setLastClick({ x: e.clientX, y: e.clientY })}
+                        className="btn btn-primary px-4 py-1.5 text-sm" 
+                        disabled={!postText.trim() || !user}
+                    >
                         Post
                     </button>
                 </div>
