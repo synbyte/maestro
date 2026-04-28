@@ -38,7 +38,8 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
             // Award reputation (25 pts)
             await supabase.rpc('increment_reputation', { 
                 profile_id: user.id, 
-                amount: 25 
+                amount: 5,
+                reason: 'for sharing your thoughts! 💬'
             });
             setCommentInput("");
             if (onRefresh) onRefresh();

@@ -206,7 +206,8 @@ export default function ProfilePage() {
                 // Award reputation (10 pts)
                 await supabase.rpc('increment_reputation', { 
                     profile_id: currentUser.id, 
-                    amount: 10 
+                    amount: 10,
+                    reason: 'for building your community network! 🤝'
                 });
             }
         }

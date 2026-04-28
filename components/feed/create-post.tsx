@@ -36,10 +36,11 @@ export function CreatePost({ user }: { user: any }) {
         if (error) {
             alert("Error creating post: " + error.message);
         } else {
-            // Award reputation (50 pts)
+            // Award reputation (10 pts)
             await supabase.rpc('increment_reputation', { 
                 profile_id: user.id, 
-                amount: 50 
+                amount: 10,
+                reason: 'for sharing a new post in the Quad! 🚀'
             });
             setPostText("");
         }

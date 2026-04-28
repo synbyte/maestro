@@ -65,7 +65,8 @@ export function StreakTracker() {
             // Award daily login reputation (75 pts)
             await supabase.rpc('increment_reputation', { 
                 profile_id: user.id, 
-                amount: 75 
+                amount: 75,
+                reason: 'for maintaining your study streak! 🔥'
             });
         };
 

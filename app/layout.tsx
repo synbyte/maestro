@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next';
 
+import { Toaster } from "sonner";
+import { NotificationsProvider } from "@/components/notifications-provider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,10 +33,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#121212] text-[#ecebe4]">
-        <main className="flex-1 flex flex-col">
-          {children}
-          <Analytics />
-        </main>
+        <NotificationsProvider>
+          <main className="flex-1 flex flex-col">
+            {children}
+            <Analytics />
+          </main>
+        </NotificationsProvider>
+        <Toaster theme="dark" position="bottom-right" closeButton richColors />
       </body>
     </html>
   );

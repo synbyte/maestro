@@ -64,7 +64,8 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
             // Award reputation (10 pts)
             await supabase.rpc('increment_reputation', { 
                 profile_id: user.id, 
-                amount: 10 
+                amount: 10,
+                reason: 'for reacting to a post! ✨'
             });
             if (onRefresh) onRefresh();
         }

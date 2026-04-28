@@ -46,6 +46,28 @@ export function AddEventModal({ isOpen, onClose, selectedDate, onEventAdded }: A
             });
 
         if (!error) {
+            // 1. Award 10 reputation points
+            await supabase.rpc('increment_reputation', { 
+                profile_id: user.id, 
+                amount: 10,
+                reason: 'for organizing a community event! 🗓️'
+            });
+
+            // 2. Automatically create a post about the event
+            const eventDateStr = startDateTime.toLocaleDateString('default', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const eventTimeStr = startDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const postContent = `📅 **New Event Organized!**\n\nI just scheduled **${title}** for ${eventDateStr} at ${eventTimeStr}.\n\n${description ? `> ${description}\n\n` : ''}${location ? `📍 Location: ${location}` : ''}\n\nCheck it out in the Events tab!`;
+            
+            await supabase.from("posts").insert({
+                user_id: user.id,
+                content: postContent
+            });
+
             setTitle("");
             setDescription("");
             setTime("12:00");
