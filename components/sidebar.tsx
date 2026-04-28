@@ -110,10 +110,13 @@ export default function Sidebar() {
 
                     {/* Coming Soon Skeletons */}
                     <div className="space-y-1">
-                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
-                            <span>Events</span>
-                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
-                        </div>
+                    <Link
+                        href="/events"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`block px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/events') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
+                    >
+                        Events
+                    </Link>
                         <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
                             <span>Study</span>
                             <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>

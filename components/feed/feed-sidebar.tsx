@@ -30,11 +30,31 @@ export function FeedSidebar() {
             // 1. Fetch cohort members
             const { data: profile } = await supabase
                 .from("profiles")
-                .select("cohort")
+                .select("cohort, start_date")
                 .eq("id", user.id)
                 .single();
 
-            if (profile) {
+            if (profile?.start_date) {
+                // Extract month and year to define the cohort
+                const userStartDate = new Date(profile.start_date + "T12:00:00");
+                const year = userStartDate.getFullYear();
+                const month = userStartDate.getMonth();
+                
+                // Get range for that month
+                const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
+                const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+                const { data: otherMembers } = await supabase
+                    .from("profiles")
+                    .select("id, display_name, avatar_url, headline, start_date")
+                    .gte("start_date", firstDay)
+                    .lte("start_date", lastDay)
+                    .neq("id", user.id)
+                    .limit(5);
+
+                if (otherMembers) setCohortMembers(otherMembers);
+            } else if (profile?.cohort) {
+                // Fallback to the cohort column if start_date is missing
                 const { data: otherMembers } = await supabase
                     .from("profiles")
                     .select("id, display_name, avatar_url, headline, start_date")
