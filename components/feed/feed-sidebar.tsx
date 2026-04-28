@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { UserAvatar } from "@/components/user-avatar";
 import { UserTooltip } from "@/components/user-tooltip";
+import { Award, Flame, BookOpen, Rocket } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StudyBuddy {
     user_id: string;
@@ -17,22 +19,52 @@ interface StudyBuddy {
 
 export function FeedSidebar() {
     const supabase = createClient();
+    const [user, setUser] = useState<any>(null);
+    const [userProfile, setUserProfile] = useState<any>(null);
+    const [completedCourseCount, setCompletedCourseCount] = useState(0);
+    const [projectCount, setProjectCount] = useState(0);
     const [cohortMembers, setCohortMembers] = useState<any[]>([]);
     const [studyBuddies, setStudyBuddies] = useState<StudyBuddy[]>([]);
     const [loadingMembers, setLoadingMembers] = useState(true);
     const [loadingBuddies, setLoadingBuddies] = useState(true);
+    const [loadingProfile, setLoadingProfile] = useState(true);
 
     useEffect(() => {
         const fetchSidebarData = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
+            setUser(user);
 
-            // 1. Fetch cohort members
-            const { data: profile } = await supabase
+            // Fetch current user's profile for stats
+            const { data: myProfile } = await supabase
                 .from("profiles")
-                .select("cohort, start_date")
+                .select("*")
                 .eq("id", user.id)
                 .single();
+
+            if (myProfile) setUserProfile(myProfile);
+
+            // Fetch completed course count
+            const { count: courseCount } = await supabase
+                .from("user_courses")
+                .select("*", { count: 'exact', head: true })
+                .eq("user_id", user.id)
+                .eq("is_completed", true);
+
+            setCompletedCourseCount(courseCount || 0);
+
+            // Fetch project count
+            const { count: pCount } = await supabase
+                .from("user_projects")
+                .select("*", { count: 'exact', head: true })
+                .eq("user_id", user.id);
+
+            setProjectCount(pCount || 0);
+
+            setLoadingProfile(false);
+
+            // 1. Fetch cohort members
+            const profile = myProfile;
 
             if (profile?.start_date) {
                 // Extract month and year to define the cohort
@@ -122,6 +154,43 @@ export function FeedSidebar() {
 
     return (
         <div className="w-full md:w-64 flex-shrink-0 space-y-8">
+            {/* Your Stats */}
+            {!loadingProfile && userProfile && (
+                <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-fade-in shadow-lg">
+                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-muted uppercase mb-4">Your Progress</h2>
+                    <div className="grid grid-cols-2 gap-3">
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<Award size={10} className="text-yellow-500" />}
+                            label="Rep"
+                            value={(userProfile.reputation || 0).toLocaleString()}
+                            tooltip="Earn reputation by interacting with the community"
+                        />
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<Flame size={10} className="text-orange-500" />}
+                            label="Streak"
+                            value={`${userProfile.current_streak || 0}d`}
+                            tooltip="Consecutive active days"
+                        />
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<BookOpen size={10} className="text-blue-500" />}
+                            label="Courses"
+                            value={completedCourseCount}
+                            tooltip="Total courses completed"
+                        />
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<Rocket size={10} className="text-purple-500" />}
+                            label="Projects"
+                            value={projectCount}
+                            tooltip="Total projects shipped"
+                        />
+                    </div>
+                </div>
+            )}
+
             {/* Study Buddies */}
             <div>
                 <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">Study Buddies</h2>
@@ -199,5 +268,40 @@ function CohortMember({ id, name, focus, avatar }: { id: string; name: string; f
                 </div>
             </Link>
         </UserTooltip>
+    );
+}
+
+function StatItem({ href, icon, label, value, tooltip }: { href: string; icon: React.ReactNode; label: string; value: string | number; tooltip: string }) {
+    const [showTooltip, setShowTooltip] = useState(false);
+
+    return (
+        <div className="relative">
+            <Link
+                href={href}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                className="bg-black/20 hover:bg-black/40 transition-colors p-3 rounded-lg border border-border group block"
+            >
+                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-wider mb-1 group-hover:text-foreground">
+                    {icon} {label}
+                </div>
+                <div className="text-lg font-bold text-foreground">{value}</div>
+            </Link>
+
+            <AnimatePresence>
+                {showTooltip && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-[#0a0a0a] border border-[#333] text-[10px] text-[#ecebe4] rounded shadow-xl whitespace-nowrap z-[100] pointer-events-none"
+                    >
+                        {tooltip}
+                        {/* Arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#333]" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
