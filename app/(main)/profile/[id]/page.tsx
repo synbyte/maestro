@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Post } from "@/components/feed/post";
 import Link from "next/link";
-import { MapPin, Link as LinkIcon, GitBranch, Calendar, GraduationCap, Award, Flame, BookOpen, Briefcase } from "lucide-react";
+import { MapPin, Link as LinkIcon, GitBranch, Calendar, GraduationCap, Award, Flame, BookOpen, Briefcase, Image as ImageIcon, ExternalLink } from "lucide-react";
 import { UserAvatar } from "@/components/user-avatar";
 
 export default function ProfilePage() {
@@ -23,6 +23,7 @@ export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("activity");
     const [followers, setFollowers] = useState<any[]>([]);
     const [following, setFollowing] = useState<any[]>([]);
+    const [userProjects, setUserProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const profileId = params.id as string;
@@ -48,7 +49,7 @@ export default function ProfilePage() {
             const { data: postsData } = await supabase
                 .from("posts")
                 .select(`
-                    id, content, created_at, user_id,
+                    id, content, created_at, user_id, type, metadata,
                     profiles ( display_name, start_date, avatar_url ),
                     comments ( id, content, created_at, user_id, profiles(display_name, start_date, avatar_url) ),
                     reactions ( id, reaction_type, user_id )
@@ -103,6 +104,17 @@ export default function ProfilePage() {
                 setIsFollowing(!!followData);
             }
 
+            // Fetch projects
+            const { data: projectsData } = await supabase
+                .from("user_projects")
+                .select("*")
+                .eq("user_id", profileId)
+                .order("completed_at", { ascending: false });
+            
+            if (projectsData) {
+                setUserProjects(projectsData);
+            }
+
             setLoading(false);
         };
 
@@ -129,6 +141,11 @@ export default function ProfilePage() {
                 { event: "*", schema: "public", table: "reactions" },
                 () => handleRefresh()
             )
+            .on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "user_projects", filter: `user_id=eq.${profileId}` },
+                () => handleRefresh()
+            )
             .subscribe();
 
         return () => {
@@ -140,7 +157,7 @@ export default function ProfilePage() {
         const { data: postsData } = await supabase
             .from("posts")
             .select(`
-                id, content, created_at, user_id,
+                id, content, created_at, user_id, type, metadata,
                 profiles ( display_name, start_date, avatar_url ),
                 comments ( id, content, created_at, user_id, profiles(display_name, start_date, avatar_url) ),
                 reactions ( id, reaction_type, user_id )
@@ -181,6 +198,17 @@ export default function ProfilePage() {
                 .eq("following_id", profileId)
                 .single();
             setIsFollowing(!!followData);
+        }
+
+        // Refresh projects
+        const { data: projectsData } = await supabase
+            .from("user_projects")
+            .select("*")
+            .eq("user_id", profileId)
+            .order("completed_at", { ascending: false });
+        
+        if (projectsData) {
+            setUserProjects(projectsData);
         }
     };
 
@@ -225,7 +253,7 @@ export default function ProfilePage() {
     const completedCoursesCount = userCourses.filter(c => c.is_completed).length;
     const stats = [
         { label: "Courses", value: completedCoursesCount.toString(), icon: <BookOpen size={16} className="text-blue-500" /> },
-        { label: "Projects", value: "12", icon: <Briefcase size={16} className="text-purple-500" /> },
+        { label: "Projects", value: userProjects.length.toString(), icon: <Briefcase size={16} className="text-purple-500" /> },
         { label: "Streak", value: `${profile.current_streak || 0} Days`, icon: <Flame size={16} className="text-orange-500" /> },
         { label: "Reputation", value: (profile.reputation || 0).toLocaleString(), icon: <Award size={16} className="text-yellow-500" /> }
     ];
@@ -387,11 +415,58 @@ export default function ProfilePage() {
                         )}
 
                         {activeTab === "portfolio" && (
-                            <div className="bg-transparent border border-border rounded-xl p-6">
-                                <h2 className="text-lg font-medium mb-4">Current Projects</h2>
-                                <div className="text-sm text-muted whitespace-pre-wrap leading-relaxed">
-                                    {profile.current_projects || "No projects showcased yet."}
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {userProjects.length === 0 ? (
+                                    <div className="col-span-full text-center py-12 text-muted text-sm border border-border rounded-xl">
+                                        No projects showcased yet.
+                                    </div>
+                                ) : (
+                                    userProjects.map(project => (
+                                        <div key={project.id} className="bg-[#121212] border border-border rounded-xl overflow-hidden flex flex-col group hover:border-accent/50 transition-all">
+                                            {project.image_url ? (
+                                                <div className="h-48 w-full overflow-hidden relative">
+                                                    <img 
+                                                        src={project.image_url} 
+                                                        alt={project.name} 
+                                                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+                                                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                </div>
+                                            ) : (
+                                                <div className="h-48 w-full bg-[#1a1a1a] flex items-center justify-center text-muted">
+                                                    <ImageIcon size={32} />
+                                                </div>
+                                            )}
+                                            
+                                            <div className="p-5 flex-1 flex flex-col">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="font-semibold text-lg text-foreground group-hover:text-accent transition-colors">{project.name}</h3>
+                                                    {project.url && (
+                                                        <a 
+                                                            href={project.url} 
+                                                            target="_blank" 
+                                                            rel="noreferrer"
+                                                            className="p-2 text-muted hover:text-foreground transition-colors"
+                                                        >
+                                                            <ExternalLink size={18} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                                
+                                                <p className="text-sm text-muted line-clamp-3 mb-4 flex-1">
+                                                    {project.description}
+                                                </p>
+                                                
+                                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#444]">
+                                                        {new Date(project.completed_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         )}
 

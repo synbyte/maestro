@@ -40,6 +40,8 @@ export default function Dashboard() {
           content,
           created_at,
           user_id,
+          type,
+          metadata,
           profiles ( display_name, start_date, avatar_url ),
           comments ( id, content, created_at, user_id, profiles(display_name, start_date, avatar_url) ),
           reactions ( id, reaction_type, user_id )
@@ -98,6 +100,8 @@ export default function Dashboard() {
         content,
         created_at,
         user_id,
+        type,
+        metadata,
         profiles ( display_name, start_date, avatar_url ),
         comments ( id, content, created_at, user_id, profiles(display_name, start_date, avatar_url) ),
         reactions ( id, reaction_type, user_id )

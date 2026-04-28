@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import AvatarUpload from "@/components/avatar-upload";
 import BannerUpload from "@/components/banner-upload";
 import { CourseEditor } from "@/components/course-editor";
+import { ProjectEditor } from "@/components/project-editor";
 
 export default function EditProfile() {
     const router = useRouter();
@@ -235,23 +236,10 @@ export default function EditProfile() {
                     <CourseEditor userId={user.id} />
                 </section>
 
-                {/* Portfolio Details (Phase 3) */}
+                {/* Portfolio Section */}
                 <section className="space-y-6 pt-6 border-t border-border">
-                    <h2 className="text-lg font-medium text-foreground">Portfolio Details</h2>
-
-                    <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-muted block" htmlFor="currentProjects">
-                            Current Projects
-                        </label>
-                        <textarea
-                            id="currentProjects"
-                            value={currentProjects}
-                            onChange={(e) => setCurrentProjects(e.target.value)}
-                            className="input-field min-h-[80px] resize-none"
-                            placeholder="E.g., 1. Building a custom text-to-image generator using Stable Diffusion..."
-                            disabled={isLoading}
-                        />
-                    </div>
+                    <h2 className="text-lg font-medium text-foreground">Portfolio Projects</h2>
+                    <ProjectEditor userId={user.id} />
 
                     <div className="space-y-1.5">
                         <label className="text-sm font-medium text-muted block" htmlFor="techStack">

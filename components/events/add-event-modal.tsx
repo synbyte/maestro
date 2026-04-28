@@ -61,11 +61,17 @@ export function AddEventModal({ isOpen, onClose, selectedDate, onEventAdded }: A
             });
             const eventTimeStr = startDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
-            const postContent = `📅 **New Event Organized!**\n\nI just scheduled **${title}** for ${eventDateStr} at ${eventTimeStr}.\n\n${description ? `> ${description}\n\n` : ''}${location ? `📍 Location: ${location}` : ''}\n\nCheck it out in the Events tab!`;
-            
             await supabase.from("posts").insert({
                 user_id: user.id,
-                content: postContent
+                content: `📅 I just scheduled a new event: **${title}**!`,
+                type: 'event_milestone',
+                metadata: {
+                    event_title: title,
+                    event_date: eventDateStr,
+                    event_time: eventTimeStr,
+                    event_location: location,
+                    event_description: description
+                }
             });
 
             setTitle("");
