@@ -10,17 +10,14 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     const isSubscribed = useRef(false);
 
     useEffect(() => {
-        if (isSubscribed.current) return;
+        let channel: any = null;
 
-        const setupListeners = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+        const setupListeners = (user: any) => {
+            if (channel) return; // Already subscribed
 
-            isSubscribed.current = true;
             console.log("🔔 Notifications System Active for:", user.email);
 
-            // Listen for all changes and filter in JS for better reliability
-            const channel = supabase
+            channel = supabase
                 .channel('realtime_notifications')
                 .on(
                     'postgres_changes',
@@ -56,14 +53,29 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
                 .subscribe((status) => {
                     console.log("📡 Realtime Status:", status);
                 });
-
-            return () => {
-                supabase.removeChannel(channel);
-                isSubscribed.current = false;
-            };
         };
 
-        setupListeners();
+        // 1. Check current session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) setupListeners(session.user);
+        });
+
+        // 2. Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+                setupListeners(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                if (channel) {
+                    supabase.removeChannel(channel);
+                    channel = null;
+                }
+            }
+        });
+
+        return () => {
+            if (channel) supabase.removeChannel(channel);
+            subscription.unsubscribe();
+        };
     }, []);
 
     return <>{children}</>;
