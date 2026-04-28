@@ -98,19 +98,19 @@ export function UserTooltip({ userId, children, className = "" }: UserTooltipPro
 
             <AnimatePresence>
                 {show && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.9, x: "-50%", y: tooltipPosition === "top" ? 10 : -10 }}
                         animate={{ opacity: 1, scale: 1, x: "-50%", y: 0 }}
-                        exit={{ 
-                            opacity: 0, 
-                            scale: 0.95, 
-                            x: "-50%", 
+                        exit={{
+                            opacity: 0,
+                            scale: 0.95,
+                            x: "-50%",
                             y: tooltipPosition === "top" ? 5 : -5,
                             pointerEvents: "none"
                         }}
-                        transition={{ 
-                            type: "spring", 
-                            damping: 20, 
+                        transition={{
+                            type: "spring",
+                            damping: 20,
                             stiffness: 300,
                             opacity: { duration: 0.15 }
                         }}
