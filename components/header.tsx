@@ -4,8 +4,9 @@ export default function Header() {
     return (
         <header className="fixed top-0 w-full z-50 bg-background border-b border-border">
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                <Link href="/" className="text-xl font-medium tracking-tight">
-                    Maestro Mix
+                <Link href="/" className="flex items-center gap-2 group">
+                    <img src="/logo.png" alt="Maestro Mix" className="w-10 h-10 object-contain" />
+                    <span className="text-xl font-medium tracking-tight">Maestro Mix</span>
                 </Link>
                 <div className="flex items-center gap-6 text-sm">
                     <Link href="/auth/login" className="text-muted hover:text-foreground transition-colors">

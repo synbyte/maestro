@@ -10,9 +10,10 @@ import { motion, AnimatePresence } from "framer-motion";
 interface UserTooltipProps {
     userId: string;
     children: React.ReactNode;
+    className?: string;
 }
 
-export function UserTooltip({ userId, children }: UserTooltipProps) {
+export function UserTooltip({ userId, children, className = "" }: UserTooltipProps) {
     const supabase = createClient();
     const [profile, setProfile] = useState<any>(null);
     const [currentCourse, setCurrentCourse] = useState<any>(null);
@@ -89,7 +90,7 @@ export function UserTooltip({ userId, children }: UserTooltipProps) {
     return (
         <div
             ref={containerRef}
-            className="relative inline-block"
+            className={`relative block w-fit ${className}`}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >

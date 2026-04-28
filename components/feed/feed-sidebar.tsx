@@ -133,7 +133,7 @@ export function FeedSidebar() {
                         <div className="text-xs text-muted">No nearby study buddies yet. Keep going! 🔥</div>
                     ) : (
                         studyBuddies.map((buddy, idx) => (
-                            <UserTooltip key={`${buddy.user_id}-${idx}`} userId={buddy.user_id}>
+                            <UserTooltip key={`${buddy.user_id}-${idx}`} userId={buddy.user_id} className="w-full">
                                 <Link
                                     href={`/profile/${buddy.user_id}`}
                                     className="flex items-center gap-3 group cursor-pointer"
@@ -190,7 +190,7 @@ export function FeedSidebar() {
 
 function CohortMember({ id, name, focus, avatar }: { id: string; name: string; focus: string; avatar?: string }) {
     return (
-        <UserTooltip userId={id}>
+        <UserTooltip userId={id} className="w-full">
             <Link href={`/profile/${id}`} className="flex items-center gap-3 group cursor-pointer">
                 <UserAvatar userId={id} src={avatar} name={name} size="md" />
                 <div className="flex-1 min-w-0">

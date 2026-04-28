@@ -37,8 +37,8 @@ export function CreatePost({ user }: { user: any }) {
             alert("Error creating post: " + error.message);
         } else {
             // Award reputation (10 pts)
-            await supabase.rpc('increment_reputation', { 
-                profile_id: user.id, 
+            await supabase.rpc('increment_reputation', {
+                profile_id: user.id,
                 amount: 10,
                 reason: 'for sharing a new post in the Quad! 🚀'
             });
@@ -51,7 +51,7 @@ export function CreatePost({ user }: { user: any }) {
             <form onSubmit={handlePost}>
                 <textarea
                     className="w-full bg-transparent border-none resize-none focus:outline-none placeholder:text-muted min-h-[80px] text-sm"
-                    placeholder="What are you building today?"
+                    placeholder="What's on your mind?"
                     value={postText}
                     onChange={(e) => setPostText(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -59,10 +59,10 @@ export function CreatePost({ user }: { user: any }) {
                 />
                 <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
                     <div className="flex items-center gap-3 text-muted text-xs">
-                        <button 
-                            type="button" 
-                            onClick={() => setPostText(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")} 
-                            className="p-1.5 hover:text-foreground transition-colors rounded hover:bg-[#333]" 
+                        <button
+                            type="button"
+                            onClick={() => setPostText(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")}
+                            className="p-1.5 hover:text-foreground transition-colors rounded hover:bg-[#333]"
                             title="Format as Code Block"
                             disabled={!user}
                         >

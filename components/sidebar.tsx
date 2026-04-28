@@ -84,8 +84,9 @@ export default function Sidebar() {
     const sidebarContent = (
         <>
             <div className="p-6">
-                <Link href="/dashboard" className="text-xl font-medium tracking-tight mb-10 block" onClick={() => setMobileMenuOpen(false)}>
-                    Maestro Mix
+                <Link href="/dashboard" className="flex items-center gap-2 mb-10 group" onClick={() => setMobileMenuOpen(false)}>
+                    <img src="/logo.png" alt="Maestro Mix" className="w-10 h-10 object-contain" />
+                    <span className="text-xl font-medium tracking-tight">Maestro Mix</span>
                 </Link>
                 <nav className="space-y-2">
                     <Link
@@ -93,7 +94,7 @@ export default function Sidebar() {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`block px-4 py-2 rounded text-sm transition-colors ${pathname === '/dashboard' ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
                     >
-                        The Quad
+                        Home
                     </Link>
                     <Link
                         href="/inbox"
@@ -110,13 +111,13 @@ export default function Sidebar() {
 
                     {/* Coming Soon Skeletons */}
                     <div className="space-y-1">
-                    <Link
-                        href="/events"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`block px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/events') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
-                    >
-                        Events
-                    </Link>
+                        <Link
+                            href="/events"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`block px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/events') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
+                        >
+                            Events
+                        </Link>
                         <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
                             <span>Study</span>
                             <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
@@ -134,20 +135,20 @@ export default function Sidebar() {
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
                         <div className="absolute bottom-full left-4 mb-2 w-56 bg-[#1a1a1a] border border-[#333] rounded shadow-lg overflow-hidden animate-fade-in z-50">
-                        <Link
-                            href="/profile/edit"
-                            className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-[#ecebe4]"
-                            onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); }}
-                        >
-                            Edit Profile
-                        </Link>
-                        <button
-                            onClick={handleSignOut}
-                            className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-red-500"
-                        >
-                            Sign out
-                        </button>
-                    </div>
+                            <Link
+                                href="/profile/edit"
+                                className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-[#ecebe4]"
+                                onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); }}
+                            >
+                                Edit Profile
+                            </Link>
+                            <button
+                                onClick={handleSignOut}
+                                className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-red-500"
+                            >
+                                Sign out
+                            </button>
+                        </div>
                     </>
                 )}
 
@@ -182,8 +183,9 @@ export default function Sidebar() {
 
             {/* Mobile Header & Hamburger */}
             <div className="md:hidden flex items-center justify-between p-4 border-b border-[#333] bg-[#121212] sticky top-0 z-40">
-                <Link href="/dashboard" className="text-lg font-medium tracking-tight">
-                    Maestro Mix
+                <Link href="/dashboard" className="flex items-center gap-2">
+                    <img src="/logo.png" alt="Maestro Mix" className="w-8 h-8 object-contain" />
+                    <span className="text-lg font-medium tracking-tight">Maestro Mix</span>
                 </Link>
                 <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#ecebe4]">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -128,8 +128,8 @@ export default function Dashboard() {
                 {/* Main Feed Column */}
                 <div className="flex-1 space-y-6">
                     <div className="border-b border-border pb-4 mb-6">
-                        <h1 className="text-3xl font-medium tracking-tight">The Quad</h1>
-                        <p className="text-muted text-sm mt-1">Share updates, ask for reviews, and celebrate wins.</p>
+                        <h1 className="text-3xl font-medium tracking-tight">The Mix</h1>
+                        <p className="text-muted text-sm mt-1">Share updates, find support, and connect with peers.</p>
                     </div>
 
                     <CreatePost user={user} />
