@@ -3,13 +3,21 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Comment } from "./comment";
-import { Code } from "lucide-react";
+import { Code, Bold, Italic, Heading, List, Quote } from "lucide-react";
 import { useReputation } from "@/components/reputation-provider";
 
 export function CommentSection({ postId, comments, user, onRefresh }: { postId: string, comments: any[], user: any, onRefresh?: () => void }) {
     const supabase = createClient();
     const { triggerRepPop } = useReputation();
     const [commentInput, setCommentInput] = useState("");
+
+    const applyMarkdown = (prefix: string, suffix: string = "") => {
+        setCommentInput(prev => {
+            const hasNewline = prev.endsWith("\n") || !prev;
+            const start = hasNewline ? "" : "\n";
+            return prev + start + prefix + "Text" + suffix + "\n";
+        });
+    };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Tab') {
@@ -69,15 +77,62 @@ export function CommentSection({ postId, comments, user, onRefresh }: { postId: 
                     disabled={!user}
                 />
                 <div className="flex justify-between items-center mt-1">
-                    <button 
-                        type="button" 
-                        onClick={() => setCommentInput(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")} 
-                        className="p-1.5 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]" 
-                        title="Format as Code Block"
-                        disabled={!user}
-                    >
-                        <Code size={16} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("### ")}
+                            className="p-1 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Heading"
+                            disabled={!user}
+                        >
+                            <Heading size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("**", "**")}
+                            className="p-1 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Bold"
+                            disabled={!user}
+                        >
+                            <Bold size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("*", "*")}
+                            className="p-1 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Italic"
+                            disabled={!user}
+                        >
+                            <Italic size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("- ")}
+                            className="p-1 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="List"
+                            disabled={!user}
+                        >
+                            <List size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("> ")}
+                            className="p-1 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Quote"
+                            disabled={!user}
+                        >
+                            <Quote size={16} />
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => setCommentInput(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")} 
+                            className="p-1.5 text-muted hover:text-foreground transition-colors rounded hover:bg-[#333]" 
+                            title="Format as Code Block"
+                            disabled={!user}
+                        >
+                            <Code size={16} />
+                        </button>
+                    </div>
                     <button
                         onClick={(e) => handleCommentSubmit(e)}
                         className="btn btn-secondary text-xs px-3 py-1.5"

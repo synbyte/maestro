@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Code } from "lucide-react";
+import { Code, Bold, Italic, Heading, List, Quote } from "lucide-react";
 import { useReputation } from "@/components/reputation-provider";
 
 export function CreatePost({ user }: { user: any }) {
@@ -10,6 +10,14 @@ export function CreatePost({ user }: { user: any }) {
     const { triggerRepPop } = useReputation();
     const [postText, setPostText] = useState("");
     const [lastClick, setLastClick] = useState({ x: 0, y: 0 });
+
+    const applyMarkdown = (prefix: string, suffix: string = "") => {
+        setPostText(prev => {
+            const hasNewline = prev.endsWith("\n") || !prev;
+            const start = hasNewline ? "" : "\n";
+            return prev + start + prefix + "Text" + suffix + "\n";
+        });
+    };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Tab') {
@@ -67,6 +75,51 @@ export function CreatePost({ user }: { user: any }) {
                 />
                 <div className="flex justify-between items-center mt-2 pt-2 border-t border-border">
                     <div className="flex items-center gap-3 text-muted text-xs">
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("### ")}
+                            className="p-1 hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Heading"
+                            disabled={!user}
+                        >
+                            <Heading size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("**", "**")}
+                            className="p-1 hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Bold"
+                            disabled={!user}
+                        >
+                            <Bold size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("*", "*")}
+                            className="p-1 hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Italic"
+                            disabled={!user}
+                        >
+                            <Italic size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("- ")}
+                            className="p-1 hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="List"
+                            disabled={!user}
+                        >
+                            <List size={16} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => applyMarkdown("> ")}
+                            className="p-1 hover:text-foreground transition-colors rounded hover:bg-[#333]"
+                            title="Quote"
+                            disabled={!user}
+                        >
+                            <Quote size={16} />
+                        </button>
                         <button
                             type="button"
                             onClick={() => setPostText(prev => prev + (prev.endsWith("\n") || !prev ? "" : "\n") + "```\n// Code here\n```\n")}
