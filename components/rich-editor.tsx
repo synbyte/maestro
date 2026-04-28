@@ -43,7 +43,7 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
         immediatelyRender: false,
         onUpdate: ({ editor }) => {
             // Get Markdown content
-            onChange(editor.storage.markdown.getMarkdown());
+            onChange((editor.storage as any).markdown.getMarkdown());
         },
         editorProps: {
             handleKeyDown: (view, event) => {
