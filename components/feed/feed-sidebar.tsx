@@ -177,7 +177,16 @@ export function FeedSidebar() {
             <CalendarWidget />
 
             {/* Your Stats */}
-            {!loadingProfile && userProfile && (
+            {loadingProfile ? (
+                <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-pulse shadow-lg">
+                    <div className="h-2 w-20 bg-white/5 rounded mb-4" />
+                    <div className="grid grid-cols-2 gap-3">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className="h-16 bg-white/5 rounded-lg border border-border/50" />
+                        ))}
+                    </div>
+                </div>
+            ) : userProfile && (
                 <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-fade-in shadow-lg">
                     <h2 className="text-[10px] font-bold tracking-[0.2em] text-muted uppercase mb-4">Your Progress</h2>
                     <div className="grid grid-cols-2 gap-3">
@@ -219,7 +228,7 @@ export function FeedSidebar() {
                 <p className="text-[11px] text-muted mb-4">Others near you in the same course</p>
                 <div className="space-y-4">
                     {loadingBuddies ? (
-                        <div className="text-xs text-muted">Loading...</div>
+                        [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : studyBuddies.length === 0 ? (
                         <div className="text-xs text-muted">No nearby study buddies yet. Keep going! 🔥</div>
                     ) : (
@@ -254,7 +263,7 @@ export function FeedSidebar() {
                 <p className="text-[11px] text-muted mb-4">Students who started with you</p>
                 <div className="space-y-4">
                     {loadingMembers ? (
-                        <div className="text-xs text-muted">Loading...</div>
+                        [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : cohortMembers.length === 0 ? (
                         <div className="text-xs text-muted">No other members in your cohort yet.</div>
                     ) : (
@@ -282,7 +291,7 @@ export function FeedSidebar() {
                 <p className="text-[11px] text-muted mb-4">Fresh faces in the community</p>
                 <div className="space-y-4">
                     {loadingNewMembers ? (
-                        <div className="text-xs text-muted">Loading...</div>
+                        [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : newMembers.length === 0 ? (
                         <div className="text-xs text-muted">No new members this week.</div>
                     ) : (
@@ -297,6 +306,18 @@ export function FeedSidebar() {
                         ))
                     )}
                 </div>
+            </div>
+        </div>
+    );
+}
+
+function SidebarSkeleton() {
+    return (
+        <div className="flex items-center gap-3 animate-pulse">
+            <div className="w-10 h-10 rounded-full bg-white/5" />
+            <div className="flex-1 space-y-2">
+                <div className="h-3 w-24 bg-white/5 rounded" />
+                <div className="h-2 w-32 bg-white/5 rounded opacity-50" />
             </div>
         </div>
     );

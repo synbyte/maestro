@@ -136,7 +136,28 @@ export default function Dashboard() {
 
                     <div className="space-y-6">
                         {loading ? (
-                            <div className="text-muted text-sm text-center py-10">Loading posts...</div>
+                            <div className="space-y-6">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="bg-transparent border border-border p-5 rounded animate-pulse">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="w-10 h-10 rounded-full bg-white/5" />
+                                            <div className="space-y-2">
+                                                <div className="h-3 w-32 bg-white/5 rounded" />
+                                                <div className="h-2 w-20 bg-white/5 rounded opacity-50" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="h-4 w-full bg-white/5 rounded" />
+                                            <div className="h-4 w-[90%] bg-white/5 rounded" />
+                                            <div className="h-4 w-[40%] bg-white/5 rounded" />
+                                        </div>
+                                        <div className="mt-6 pt-4 border-t border-border/50 flex gap-4">
+                                            <div className="h-3 w-12 bg-white/5 rounded" />
+                                            <div className="h-3 w-12 bg-white/5 rounded" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         ) : posts.length === 0 ? (
                             <div className="text-muted text-sm text-center py-10 border border-border rounded">No posts yet. Be the first!</div>
                         ) : (
