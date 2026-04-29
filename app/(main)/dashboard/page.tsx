@@ -168,7 +168,9 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <FeedSidebar />
+                <div className="hidden md:block">
+                    <FeedSidebar />
+                </div>
 
             </div>
         </div>

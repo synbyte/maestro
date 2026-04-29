@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Bell } from "lucide-react";
+import { Bell, Award, Flame, BookOpen, Rocket } from "lucide-react";
+import { CalendarWidget } from "@/components/calendar-widget";
 
 export default function Sidebar() {
     const router = useRouter();
@@ -18,6 +19,8 @@ export default function Sidebar() {
     const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
     const [sidebarUserId, setSidebarUserId] = useState<string | null>(null);
+    const [stats, setStats] = useState({ reputation: 0, streak: 0, courses: 0, projects: 0 });
+    const [loadingStats, setLoadingStats] = useState(true);
 
     // Effect 1: Fetch user + data
     useEffect(() => {
@@ -49,6 +52,17 @@ export default function Sidebar() {
                 .eq("is_read", false);
             setUnreadNotifCount(notifCount ?? 0);
 
+            // Fetch counts
+            const { count: courseCount } = await supabase.from("user_courses").select("*", { count: 'exact', head: true }).eq("user_id", user.id).eq("is_completed", true);
+            const { count: projectCount } = await supabase.from("user_projects").select("*", { count: 'exact', head: true }).eq("user_id", user.id);
+
+            setStats({
+                reputation: data?.reputation || 0,
+                streak: data?.current_streak || 0,
+                courses: courseCount || 0,
+                projects: projectCount || 0
+            });
+            setLoadingStats(false);
             setSidebarUserId(user.id);
         };
         run();
@@ -160,6 +174,43 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </nav>
+
+                {/* Mobile-only Widgets */}
+                <div className="mt-10 md:hidden space-y-8 pb-10">
+                    <div className="px-4">
+                        <h2 className="text-[10px] font-bold tracking-[0.2em] text-muted uppercase mb-4">Your Progress</h2>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
+                                    <Award size={10} className="text-yellow-500" /> Rep
+                                </div>
+                                <div className="text-sm font-bold">{stats.reputation}</div>
+                            </div>
+                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
+                                    <Flame size={10} className="text-orange-500" /> Streak
+                                </div>
+                                <div className="text-sm font-bold">{stats.streak}d</div>
+                            </div>
+                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
+                                    <BookOpen size={10} className="text-blue-500" /> Courses
+                                </div>
+                                <div className="text-sm font-bold">{stats.courses}</div>
+                            </div>
+                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
+                                    <Rocket size={10} className="text-purple-500" /> Projects
+                                </div>
+                                <div className="text-sm font-bold">{stats.projects}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="px-4">
+                        <CalendarWidget />
+                    </div>
+                </div>
             </div>
 
             <div className="p-4 border-t border-[#333] relative flex items-center gap-1">
