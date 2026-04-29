@@ -90,19 +90,8 @@ drop policy if exists "Users can unfollow others." on public.follows;
 create policy "Users can unfollow others." on public.follows
   for delete using ((select auth.uid()) = follower_id);
 
--- Function and trigger to automatically create profile for new auth.users
-create or replace function public.handle_new_user()
-returns trigger as $$
-begin
-  insert into public.profiles (id, display_name)
-  values (new.id, new.raw_user_meta_data->>'full_name');
-  return new;
-end;
-$$ language plpgsql security definer;
-
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+-- Profiles are now created during the onboarding flow in the application (upsert)
+-- to prevent "Unknown" profiles from being created before a user provides their details.
 
 
 -- CREATE POSTS TABLE (The Quad)

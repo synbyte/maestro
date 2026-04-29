@@ -74,18 +74,18 @@ export default function Onboarding() {
         setIsLoading(true);
         setError(null);
 
-        // 1. Update Profile
+        // 1. Upsert Profile (create or update)
         const { error: profileError } = await supabase
             .from("profiles")
-            .update({
+            .upsert({
+                id: user.id,
                 display_name: displayName,
                 avatar_url: avatarUrl,
                 headline,
                 bio,
                 start_date: startDate,
                 is_onboarded: true,
-            })
-            .eq("id", user.id);
+            });
 
         if (profileError) {
             setError(profileError.message);
@@ -116,7 +116,13 @@ export default function Onboarding() {
             .from("posts")
             .insert({
                 user_id: user.id,
-                content: milestoneContent
+                content: milestoneContent,
+                type: 'onboarding_milestone',
+                metadata: {
+                    course_name: courseName,
+                    week_number: weekNumber,
+                    lesson_number: lessonNumber
+                }
             });
 
         router.push("/dashboard");

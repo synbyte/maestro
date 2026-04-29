@@ -24,8 +24,10 @@ export function FeedSidebar() {
     const [completedCourseCount, setCompletedCourseCount] = useState(0);
     const [projectCount, setProjectCount] = useState(0);
     const [cohortMembers, setCohortMembers] = useState<any[]>([]);
+    const [newMembers, setNewMembers] = useState<any[]>([]);
     const [studyBuddies, setStudyBuddies] = useState<StudyBuddy[]>([]);
     const [loadingMembers, setLoadingMembers] = useState(true);
+    const [loadingNewMembers, setLoadingNewMembers] = useState(true);
     const [loadingBuddies, setLoadingBuddies] = useState(true);
     const [loadingProfile, setLoadingProfile] = useState(true);
 
@@ -81,6 +83,7 @@ export function FeedSidebar() {
                     .select("id, display_name, avatar_url, headline, start_date")
                     .gte("start_date", firstDay)
                     .lte("start_date", lastDay)
+                    .eq("is_onboarded", true)
                     .neq("id", user.id)
                     .limit(5);
 
@@ -91,12 +94,27 @@ export function FeedSidebar() {
                     .from("profiles")
                     .select("id, display_name, avatar_url, headline, start_date")
                     .eq("cohort", profile.cohort)
+                    .eq("is_onboarded", true)
                     .neq("id", user.id)
                     .limit(5);
 
                 if (otherMembers) setCohortMembers(otherMembers);
             }
             setLoadingMembers(false);
+
+            // 1.5 Fetch new members (last 7 days)
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            const { data: newMembersData } = await supabase
+                .from("profiles")
+                .select("id, display_name, avatar_url, headline, created_at")
+                .gte("created_at", sevenDaysAgo.toISOString())
+                .eq("is_onboarded", true)
+                .order("created_at", { ascending: false })
+                .limit(5);
+
+            if (newMembersData) setNewMembers(newMembersData);
+            setLoadingNewMembers(false);
 
             // 2. Fetch current user's active (non-completed) courses
             const { data: myCourses } = await supabase
@@ -250,6 +268,29 @@ export function FeedSidebar() {
                                 />
                             );
                         })
+                    )}
+                </div>
+            </div>
+
+            {/* New Members */}
+            <div>
+                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">New Members</h2>
+                <p className="text-[11px] text-muted mb-4">Fresh faces in the community</p>
+                <div className="space-y-4">
+                    {loadingNewMembers ? (
+                        <div className="text-xs text-muted">Loading...</div>
+                    ) : newMembers.length === 0 ? (
+                        <div className="text-xs text-muted">No new members this week.</div>
+                    ) : (
+                        newMembers.map(member => (
+                            <CohortMember
+                                key={member.id}
+                                id={member.id}
+                                name={member.display_name || "Unknown"}
+                                focus={member.headline || "New Member"}
+                                avatar={member.avatar_url}
+                            />
+                        ))
                     )}
                 </div>
             </div>

@@ -190,6 +190,41 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                         </div>
                     </div>
                 </div>
+            ) : post.type === 'onboarding_milestone' ? (
+                <div className="mb-4 mt-2">
+                    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#111] border border-emerald-500/20 rounded-xl p-6 shadow-2xl relative overflow-hidden group/onboarding">
+                        {/* Background Decoration */}
+                        <div className="absolute -right-8 -top-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover/onboarding:bg-emerald-500/20 transition-colors duration-500" />
+                        
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="p-2 bg-emerald-500/20 rounded-lg">
+                                    <Globe size={18} className="text-emerald-400" />
+                                </div>
+                                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em]">New Member Joined</span>
+                            </div>
+
+                            <h3 className="text-xl font-bold text-foreground mb-3">
+                                Say hello to {post.profiles?.display_name || "a new member"}! 👋
+                            </h3>
+                            
+                            <div className="text-sm text-[#aaaaa5] mb-5 leading-relaxed">
+                                <ReactMarkdown>{post.content}</ReactMarkdown>
+                            </div>
+
+                            <div className="flex flex-wrap gap-3">
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[11px] text-muted-foreground">
+                                    <Rocket size={12} className="text-emerald-400" />
+                                    <span>{post.metadata?.course_name}</span>
+                                </div>
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-[11px] text-muted-foreground">
+                                    <Calendar size={12} className="text-emerald-400" />
+                                    <span>Week {post.metadata?.week_number}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             ) : post.type === 'event_milestone' ? (
                 <div className="mb-4 mt-2">
                     <div className="bg-[#1a1a1a] border border-blue-500/20 rounded-xl p-5 shadow-xl border-l-4 border-l-blue-500">
