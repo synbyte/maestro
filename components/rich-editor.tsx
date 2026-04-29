@@ -65,6 +65,17 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
         }
     }, [editor, disabled]);
 
+    // Synchronize content from props (e.g. for resetting after submit)
+    useEffect(() => {
+        if (!editor) return;
+        
+        // Get current markdown to compare
+        const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
+        if (content !== currentMarkdown) {
+            editor.commands.setContent(content);
+        }
+    }, [content, editor]);
+
     if (!editor) {
         return null;
     }
