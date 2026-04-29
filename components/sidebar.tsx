@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +21,19 @@ export default function Sidebar() {
     const [sidebarUserId, setSidebarUserId] = useState<string | null>(null);
     const [stats, setStats] = useState({ reputation: 0, streak: 0, courses: 0, projects: 0 });
     const [loadingStats, setLoadingStats] = useState(true);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+
+    // Global click-outside for user menu
+    useEffect(() => {
+        if (!menuOpen) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [menuOpen]);
 
     // Effect 1: Fetch user + data
     useEffect(() => {
@@ -223,26 +236,23 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <div className="p-6 border-t border-white/5 bg-black/10 backdrop-blur-md relative flex items-center gap-2">
+            <div className="p-6 border-t border-white/5 bg-black/10 backdrop-blur-md relative flex items-center gap-2" ref={userMenuRef}>
                 {menuOpen && (
-                    <>
-                        <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                        <div className="absolute bottom-[calc(100%+12px)] left-6 right-6 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 p-1.5 backdrop-blur-xl">
-                            <Link
-                                href="/profile/edit"
-                                className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-white/5 rounded-xl transition-all text-foreground font-medium"
-                                onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); }}
-                            >
-                                Edit Profile
-                            </Link>
-                            <button
-                                onClick={handleSignOut}
-                                className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-red-500/10 rounded-xl transition-all text-red-500 font-medium"
-                            >
-                                Sign out
-                            </button>
-                        </div>
-                    </>
+                    <div className="absolute bottom-[calc(100%+12px)] left-6 right-6 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 p-1.5 backdrop-blur-xl">
+                        <Link
+                            href="/profile/edit"
+                            className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-white/5 rounded-xl transition-all text-foreground font-medium"
+                            onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); }}
+                        >
+                            Edit Profile
+                        </Link>
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-red-500/10 rounded-xl transition-all text-red-500 font-medium"
+                        >
+                            Sign out
+                        </button>
+                    </div>
                 )}
 
                 <button
@@ -309,8 +319,8 @@ export default function Sidebar() {
                             </span>
                         </Link>
                     )}
-                    <button 
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-2 text-foreground hover:bg-white/5 rounded-lg transition-all"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

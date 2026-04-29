@@ -122,53 +122,56 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="flex flex-1 flex-col items-center py-10 px-6">
-            <div className="w-full max-w-3xl flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col h-[calc(100vh-57px)] md:h-screen overflow-hidden">
+            <div className="flex flex-1 flex-row justify-center w-full max-w-[1400px] mx-auto overflow-hidden">
 
                 {/* Main Feed Column */}
-                <div className="flex-1 space-y-6">
-                    <div className="border-b border-border pb-4 mb-6">
-                        <h1 className="text-3xl font-medium tracking-tight">The Mix</h1>
-                        <p className="text-muted text-sm mt-1">Share updates, find support, and connect with peers.</p>
-                    </div>
+                <div className="flex-1 h-full overflow-y-auto custom-scrollbar py-10 px-6">
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="border-b border-border pb-4 mb-6">
+                            <h1 className="text-3xl font-medium tracking-tight">The Mix</h1>
+                            <p className="text-muted text-sm mt-1">Share updates, find support, and connect with peers.</p>
+                        </div>
 
-                    <CreatePost user={user} />
+                        <CreatePost user={user} />
 
-                    <div className="space-y-6">
-                        {loading ? (
-                            <div className="space-y-6">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 p-6 rounded-2xl animate-pulse shadow-xl">
-                                        <div className="flex items-center gap-4 mb-6">
-                                            <div className="w-10 h-10 rounded-xl bg-white/5" />
-                                            <div className="space-y-2.5">
-                                                <div className="h-3.5 w-32 bg-white/5 rounded-lg" />
-                                                <div className="h-2 w-24 bg-white/5 rounded-lg opacity-50" />
+                        <div className="space-y-6 pb-20">
+                            {loading ? (
+                                <div className="space-y-6">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 p-6 rounded-2xl animate-pulse shadow-xl">
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <div className="w-10 h-10 rounded-xl bg-white/5" />
+                                                <div className="space-y-2.5">
+                                                    <div className="h-3.5 w-32 bg-white/5 rounded-lg" />
+                                                    <div className="h-2 w-24 bg-white/5 rounded-lg opacity-50" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-3.5 mb-8">
+                                                <div className="h-4 w-full bg-white/5 rounded-lg" />
+                                                <div className="h-4 w-[92%] bg-white/5 rounded-lg" />
+                                                <div className="h-4 w-[45%] bg-white/5 rounded-lg" />
+                                            </div>
+                                            <div className="pt-5 border-t border-white/5 flex gap-8">
+                                                <div className="h-3.5 w-16 bg-white/5 rounded-lg" />
+                                                <div className="h-3.5 w-20 bg-white/5 rounded-lg" />
                                             </div>
                                         </div>
-                                        <div className="space-y-3.5 mb-8">
-                                            <div className="h-4 w-full bg-white/5 rounded-lg" />
-                                            <div className="h-4 w-[92%] bg-white/5 rounded-lg" />
-                                            <div className="h-4 w-[45%] bg-white/5 rounded-lg" />
-                                        </div>
-                                        <div className="pt-5 border-t border-white/5 flex gap-8">
-                                            <div className="h-3.5 w-16 bg-white/5 rounded-lg" />
-                                            <div className="h-3.5 w-20 bg-white/5 rounded-lg" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : posts.length === 0 ? (
-                            <div className="text-muted text-sm text-center py-10 border border-border rounded">No posts yet. Be the first!</div>
-                        ) : (
-                            posts.map((post) => (
-                                <Post key={post.id} post={post} user={user} onRefresh={() => verifyAndPrependPost(post.id)} />
-                            ))
-                        )}
+                                    ))}
+                                </div>
+                            ) : posts.length === 0 ? (
+                                <div className="text-muted text-sm text-center py-10 border border-border rounded">No posts yet. Be the first!</div>
+                            ) : (
+                                posts.map((post) => (
+                                    <Post key={post.id} post={post} user={user} onRefresh={() => verifyAndPrependPost(post.id)} />
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="hidden md:block">
+                {/* Sidebar Column */}
+                <div className="hidden lg:block w-80 h-full overflow-y-auto custom-scrollbar py-10 px-6 border-l border-white/5">
                     <FeedSidebar />
                 </div>
 
