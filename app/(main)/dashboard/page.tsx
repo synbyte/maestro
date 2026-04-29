@@ -138,22 +138,22 @@ export default function Dashboard() {
                         {loading ? (
                             <div className="space-y-6">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className="bg-transparent border border-border p-5 rounded animate-pulse">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-10 h-10 rounded-full bg-white/5" />
-                                            <div className="space-y-2">
-                                                <div className="h-3 w-32 bg-white/5 rounded" />
-                                                <div className="h-2 w-20 bg-white/5 rounded opacity-50" />
+                                    <div key={i} className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 p-6 rounded-2xl animate-pulse shadow-xl">
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <div className="w-10 h-10 rounded-xl bg-white/5" />
+                                            <div className="space-y-2.5">
+                                                <div className="h-3.5 w-32 bg-white/5 rounded-lg" />
+                                                <div className="h-2 w-24 bg-white/5 rounded-lg opacity-50" />
                                             </div>
                                         </div>
-                                        <div className="space-y-3">
-                                            <div className="h-4 w-full bg-white/5 rounded" />
-                                            <div className="h-4 w-[90%] bg-white/5 rounded" />
-                                            <div className="h-4 w-[40%] bg-white/5 rounded" />
+                                        <div className="space-y-3.5 mb-8">
+                                            <div className="h-4 w-full bg-white/5 rounded-lg" />
+                                            <div className="h-4 w-[92%] bg-white/5 rounded-lg" />
+                                            <div className="h-4 w-[45%] bg-white/5 rounded-lg" />
                                         </div>
-                                        <div className="mt-6 pt-4 border-t border-border/50 flex gap-4">
-                                            <div className="h-3 w-12 bg-white/5 rounded" />
-                                            <div className="h-3 w-12 bg-white/5 rounded" />
+                                        <div className="pt-5 border-t border-white/5 flex gap-8">
+                                            <div className="h-3.5 w-16 bg-white/5 rounded-lg" />
+                                            <div className="h-3.5 w-20 bg-white/5 rounded-lg" />
                                         </div>
                                     </div>
                                 ))}

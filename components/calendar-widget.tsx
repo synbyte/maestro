@@ -38,9 +38,16 @@ export function CalendarWidget() {
     }, [supabase]);
 
     if (loading) return (
-        <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-pulse">
-            <div className="h-4 w-24 bg-white/5 rounded mb-4" />
-            <div className="h-20 bg-white/5 rounded" />
+        <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 animate-pulse shadow-xl">
+            <div className="h-3 w-28 bg-white/5 rounded-lg mb-6" />
+            <div className="flex gap-5">
+                <div className="w-14 h-16 bg-white/5 rounded-2xl shrink-0" />
+                <div className="flex-1 space-y-3 py-1">
+                    <div className="h-4 w-3/4 bg-white/5 rounded-lg" />
+                    <div className="h-3 w-1/2 bg-white/5 rounded-lg opacity-50" />
+                </div>
+            </div>
+            <div className="mt-6 h-10 w-full bg-white/5 rounded-xl" />
         </div>
     );
 
