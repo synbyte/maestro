@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { COURSES } from "@/lib/constants";
 
 interface Course {
     id: string;
@@ -85,15 +86,6 @@ export function CourseEditor({ userId }: { userId: string }) {
     const saveCourse = async (index: number) => {
         const course = courses[index];
         if (!course.course_name.trim() || isSavingIndex === index) return;
-
-        // Validate Course Name Format (e.g. PY101)
-        const courseCodeRegex = /^[A-Z]{2,4}\d{2,4}$/;
-        if (!courseCodeRegex.test(course.course_name.toUpperCase().trim())) {
-            setValidationError("Use course codes (e.g. PY101) instead of names.");
-            return;
-        } else {
-            setValidationError(null);
-        }
 
         setIsSavingIndex(index);
         try {
@@ -196,15 +188,20 @@ export function CourseEditor({ userId }: { userId: string }) {
                     {/* Course Name */}
                     <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted block">Course Name</label>
-                        <input
-                            type="text"
+                        <select
                             value={course.course_name}
-                            onChange={(e) => updateCourse(index, "course_name", e.target.value)}
-                            onBlur={() => saveCourse(index)}
-                            className="input-field py-1.5 text-sm"
-                            placeholder="e.g. PY101"
+                            onChange={(e) => {
+                                updateCourse(index, "course_name", e.target.value);
+                                setTimeout(() => saveCourse(index), 0);
+                            }}
+                            className="input-field py-1.5 text-sm w-full"
                             disabled={isSavingIndex === index}
-                        />
+                        >
+                            <option value="">Select a course...</option>
+                            {COURSES.map(c => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Week & Lesson Selectors */}

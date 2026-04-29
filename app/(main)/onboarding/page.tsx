@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AvatarUpload from "@/components/avatar-upload";
+import { COURSES } from "@/lib/constants";
 
 export default function Onboarding() {
     const router = useRouter();
@@ -63,13 +64,6 @@ export default function Onboarding() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
-
-        // Validate Course Name Format (e.g. PY101)
-        const courseCodeRegex = /^[A-Z]{2,4}\d{2,4}$/;
-        if (!courseCodeRegex.test(courseName.toUpperCase().trim())) {
-            setError("Please use the course code format (e.g. PY101, CS50) instead of the full name.");
-            return;
-        }
 
         setIsLoading(true);
         setError(null);
@@ -235,15 +229,18 @@ export default function Onboarding() {
                         <label className="text-sm font-medium text-muted block" htmlFor="courseName">
                             Course Name
                         </label>
-                        <input
+                        <select
                             id="courseName"
-                            type="text"
                             value={courseName}
-                            onChange={(e) => setCourseName(e.target.value.toUpperCase().trim())}
+                            onChange={(e) => setCourseName(e.target.value)}
                             className="input-field"
-                            placeholder="e.g. PY101, CS50"
                             required
-                        />
+                        >
+                            <option value="">Select a course...</option>
+                            {COURSES.map(c => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
