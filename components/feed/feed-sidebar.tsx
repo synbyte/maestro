@@ -178,42 +178,45 @@ export function FeedSidebar() {
 
             {/* Your Stats */}
             {loadingProfile ? (
-                <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-pulse shadow-lg">
-                    <div className="h-2 w-20 bg-white/5 rounded mb-4" />
-                    <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 animate-pulse shadow-lg">
+                    <div className="h-3 w-24 bg-white/5 rounded mb-5" />
+                    <div className="grid grid-cols-2 gap-4">
                         {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="h-16 bg-white/5 rounded-lg border border-border/50" />
+                            <div key={i} className="h-20 bg-white/5 rounded-xl border border-white/5" />
                         ))}
                     </div>
                 </div>
             ) : userProfile && (
-                <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-fade-in shadow-lg">
-                    <h2 className="text-[10px] font-bold tracking-[0.2em] text-muted uppercase mb-4">Your Progress</h2>
-                    <div className="grid grid-cols-2 gap-3">
+                <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 shadow-xl transition-all hover:bg-[#1a1a1a]/60 hover:border-white/10 group/stats">
+                    <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted uppercase mb-5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                        Your Progress
+                    </h2>
+                    <div className="grid grid-cols-2 gap-4">
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<Award size={10} className="text-yellow-500" />}
+                            icon={<Award size={14} className="text-yellow-400" />}
                             label="Rep"
                             value={(userProfile.reputation || 0).toLocaleString()}
                             tooltip="Earn reputation by interacting with the community"
                         />
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<Flame size={10} className="text-orange-500" />}
+                            icon={<Flame size={14} className="text-orange-500" />}
                             label="Streak"
                             value={`${userProfile.current_streak || 0}d`}
                             tooltip="Consecutive active days"
                         />
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<BookOpen size={10} className="text-blue-500" />}
+                            icon={<BookOpen size={14} className="text-blue-400" />}
                             label="Courses"
                             value={completedCourseCount}
                             tooltip="Total courses completed"
                         />
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<Rocket size={10} className="text-purple-500" />}
+                            icon={<Rocket size={14} className="text-purple-400" />}
                             label="Projects"
                             value={projectCount}
                             tooltip="Total projects shipped"
@@ -223,20 +226,20 @@ export function FeedSidebar() {
             )}
 
             {/* Study Buddies */}
-            <div>
-                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">Study Buddies</h2>
-                <p className="text-[11px] text-muted mb-4">Others near you in the same course</p>
-                <div className="space-y-4">
+            <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted uppercase mb-1">Study Buddies</h2>
+                <p className="text-[10px] text-muted/60 mb-5">Learning near you</p>
+                <div className="space-y-5">
                     {loadingBuddies ? (
                         [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : studyBuddies.length === 0 ? (
-                        <div className="text-xs text-muted">No nearby study buddies yet. Keep going! 🔥</div>
+                        <div className="text-xs text-muted/50 italic py-2">No buddies nearby yet.</div>
                     ) : (
                         studyBuddies.map((buddy, idx) => (
                             <UserTooltip key={`${buddy.user_id}-${idx}`} userId={buddy.user_id} className="w-full">
                                 <Link
                                     href={`/profile/${buddy.user_id}`}
-                                    className="flex items-center gap-3 group cursor-pointer"
+                                    className="flex items-center gap-3 group/item cursor-pointer"
                                 >
                                     <UserAvatar
                                         userId={buddy.user_id}
@@ -245,8 +248,8 @@ export function FeedSidebar() {
                                         size="md"
                                     />
                                     <div className="flex-1 min-w-0">
-                                        <div className="text-sm font-medium text-foreground group-hover:underline truncate">{buddy.display_name}</div>
-                                        <div className="text-[11px] text-muted truncate uppercase tracking-tight">
+                                        <div className="text-sm font-medium text-foreground group-hover/item:text-accent transition-colors truncate">{buddy.display_name}</div>
+                                        <div className="text-[10px] text-muted/70 truncate uppercase tracking-tight">
                                             {buddy.course_name} · W{buddy.week_number} L{buddy.lesson_number}
                                         </div>
                                     </div>
@@ -258,14 +261,14 @@ export function FeedSidebar() {
             </div>
 
             {/* Cohort Members */}
-            <div>
-                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">Cohort Members</h2>
-                <p className="text-[11px] text-muted mb-4">Students who started with you</p>
-                <div className="space-y-4">
+            <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted uppercase mb-1">Cohort Members</h2>
+                <p className="text-[10px] text-muted/60 mb-5">Started with you</p>
+                <div className="space-y-5">
                     {loadingMembers ? (
                         [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : cohortMembers.length === 0 ? (
-                        <div className="text-xs text-muted">No other members in your cohort yet.</div>
+                        <div className="text-xs text-muted/50 italic py-2">Solo journey so far.</div>
                     ) : (
                         cohortMembers.map(member => {
                             const cohortStr = member.start_date
@@ -286,21 +289,21 @@ export function FeedSidebar() {
             </div>
 
             {/* New Members */}
-            <div>
-                <h2 className="text-sm font-medium tracking-wide text-foreground uppercase mb-1">New Members</h2>
-                <p className="text-[11px] text-muted mb-4">Fresh faces in the community</p>
-                <div className="space-y-4">
+            <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted uppercase mb-1">Fresh Faces</h2>
+                <p className="text-[10px] text-muted/60 mb-5">New in the community</p>
+                <div className="space-y-5">
                     {loadingNewMembers ? (
                         [1, 2, 3].map(i => <SidebarSkeleton key={i} />)
                     ) : newMembers.length === 0 ? (
-                        <div className="text-xs text-muted">No new members this week.</div>
+                        <div className="text-xs text-muted/50 italic py-2">No new faces today.</div>
                     ) : (
                         newMembers.map(member => (
                             <CohortMember
                                 key={member.id}
                                 id={member.id}
                                 name={member.display_name || "Unknown"}
-                                focus={member.headline || "New Member"}
+                                focus={member.headline || "Just Joined"}
                                 avatar={member.avatar_url}
                             />
                         ))
@@ -314,10 +317,10 @@ export function FeedSidebar() {
 function SidebarSkeleton() {
     return (
         <div className="flex items-center gap-3 animate-pulse">
-            <div className="w-10 h-10 rounded-full bg-white/5" />
+            <div className="w-10 h-10 rounded-xl bg-white/5" />
             <div className="flex-1 space-y-2">
-                <div className="h-3 w-24 bg-white/5 rounded" />
-                <div className="h-2 w-32 bg-white/5 rounded opacity-50" />
+                <div className="h-3 w-20 bg-white/5 rounded" />
+                <div className="h-2 w-28 bg-white/5 rounded opacity-50" />
             </div>
         </div>
     );
@@ -326,11 +329,11 @@ function SidebarSkeleton() {
 function CohortMember({ id, name, focus, avatar }: { id: string; name: string; focus: string; avatar?: string }) {
     return (
         <UserTooltip userId={id} className="w-full">
-            <Link href={`/profile/${id}`} className="flex items-center gap-3 group cursor-pointer">
+            <Link href={`/profile/${id}`} className="flex items-center gap-3 group/member cursor-pointer">
                 <UserAvatar userId={id} src={avatar} name={name} size="md" />
                 <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground group-hover:underline truncate">{name}</div>
-                    <div className="text-[11px] text-muted truncate">{focus}</div>
+                    <div className="text-sm font-medium text-foreground group-hover/member:text-accent transition-colors truncate">{name}</div>
+                    <div className="text-[10px] text-muted/70 truncate">{focus}</div>
                 </div>
             </Link>
         </UserTooltip>
@@ -346,12 +349,12 @@ function StatItem({ href, icon, label, value, tooltip }: { href: string; icon: R
                 href={href}
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
-                className="bg-black/20 hover:bg-black/40 transition-colors p-3 rounded-lg border border-border group block"
+                className="bg-white/[0.03] hover:bg-white/5 transition-all duration-300 p-4 rounded-xl border border-white/5 group block"
             >
-                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-wider mb-1 group-hover:text-foreground">
+                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-[0.15em] mb-2 group-hover:text-accent transition-colors">
                     {icon} {label}
                 </div>
-                <div className="text-lg font-bold text-foreground">{value}</div>
+                <div className="text-xl font-bold text-foreground group-hover:scale-105 transition-transform origin-left">{value}</div>
             </Link>
 
             <AnimatePresence>
