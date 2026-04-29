@@ -7,7 +7,20 @@ import { CommentSection } from "./comment-section";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { UserInfo } from "@/components/user-info";
-import { Rocket, Calendar, MapPin, ExternalLink, Award, Globe } from "lucide-react";
+import { 
+    Rocket, 
+    Calendar, 
+    MapPin, 
+    ExternalLink, 
+    Award, 
+    Globe, 
+    MessageSquare, 
+    Smile, 
+    MoreHorizontal, 
+    Trash2, 
+    Pencil,
+    Share2
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReputation } from "@/components/reputation-provider";
 
@@ -93,8 +106,8 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     };
 
     return (
-        <div className="bg-transparent border border-border p-5 rounded group/post relative hover:z-50 transition-[z-index] duration-0">
-            <div className="flex justify-between mb-3">
+        <div className="bg-[#1a1a1a]/40 backdrop-blur-sm border border-white/5 p-6 rounded-2xl group/post relative transition-all duration-300 hover:bg-[#1a1a1a]/60 hover:border-white/10 hover:shadow-2xl hover:shadow-black/20">
+            <div className="flex justify-between items-start mb-5">
                 <UserInfo
                     userId={post.user_id}
                     avatarUrl={post.profiles?.avatar_url}
@@ -103,27 +116,30 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                     timestamp={post.created_at}
                     size="md"
                 />
-                {user?.id === post.user_id && (
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/post:opacity-100 transition-opacity">
-                        <button
-                            onClick={() => {
-                                setIsEditing(!isEditing);
-                                setEditContent(post.content);
-                            }}
-                            className="text-sm text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
-                            title="Edit Post"
-                        >
-                            Edit
-                        </button>
-                        <button
-                            onClick={handleDeletePost}
-                            className="text-lg text-muted hover:text-foreground transition-colors bg-transparent border-none cursor-pointer"
-                            title="Delete Post"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                )}
+                
+                <div className="flex items-center gap-1 opacity-0 group-hover/post:opacity-100 transition-all duration-200">
+                    {user?.id === post.user_id && (
+                        <>
+                            <button
+                                onClick={() => {
+                                    setIsEditing(!isEditing);
+                                    setEditContent(post.content);
+                                }}
+                                className="p-2 text-muted hover:text-foreground hover:bg-white/5 rounded-full transition-all"
+                                title="Edit Post"
+                            >
+                                <Pencil size={14} />
+                            </button>
+                            <button
+                                onClick={handleDeletePost}
+                                className="p-2 text-muted hover:text-red-400 hover:bg-red-500/10 rounded-full transition-all"
+                                title="Delete Post"
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
 
             {isEditing ? (
@@ -276,57 +292,66 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
                     </div>
                 </div>
             ) : (
-                <div className="text-foreground text-sm leading-relaxed mb-3 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed markdown-body">
+                <div className="text-[#ecebe4] text-[15px] leading-relaxed mb-6 prose prose-invert prose-sm max-w-none prose-p:leading-relaxed markdown-body">
                     <ReactMarkdown>{post.content}</ReactMarkdown>
                 </div>
             )}
 
-            <div className="mb-3">
+            <div className="mb-4">
                 <Reactions reactions={post.reactions} currentUser={user} onToggleReaction={handleReact} />
             </div>
 
-            <div className="flex gap-4 text-xs text-muted border-t border-border pt-3 relative">
-                <button
-                    onClick={() => setReactionPicker(!reactionPicker)}
-                    className="font-medium hover:text-foreground transition-colors border-none bg-transparent cursor-pointer"
-                >
-                    React
-                </button>
+            <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+                <div className="relative">
+                    <button
+                        onClick={() => setReactionPicker(!reactionPicker)}
+                        className={`flex items-center gap-2 text-xs font-medium transition-all ${reactionPicker ? 'text-accent' : 'text-muted hover:text-foreground'}`}
+                    >
+                        <Smile size={16} />
+                        <span>React</span>
+                    </button>
 
-                <AnimatePresence>
-                    {reactionPicker && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-0"
-                                onClick={() => setReactionPicker(false)}
-                            />
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.8, y: 10, pointerEvents: "none" }}
-                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                                className="absolute top-10 left-0 bg-[#222] border border-[#444] rounded p-2 flex gap-2 z-10 shadow-lg"
-                            >
-                                {REACTION_TYPES.map(rt => (
-                                    <button
-                                        key={rt.value}
-                                        onClick={(e) => handleReact(rt.value, e)}
-                                        className="hover:bg-[#333] p-1.5 rounded transition-colors flex flex-col items-center gap-1 group/btn"
-                                        title={rt.label}
-                                    >
-                                        {rt.emoji}
-                                    </button>
-                                ))}
-                            </motion.div>
-                        </>
-                    )}
-                </AnimatePresence>
+                    <AnimatePresence>
+                        {reactionPicker && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setReactionPicker(false)}
+                                />
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
+                                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                    className="absolute bottom-full left-0 mb-3 bg-[#1a1a1a] border border-white/10 rounded-2xl p-2 flex gap-1 z-20 shadow-2xl backdrop-blur-xl"
+                                >
+                                    {REACTION_TYPES.map(rt => (
+                                        <button
+                                            key={rt.value}
+                                            onClick={(e) => handleReact(rt.value, e)}
+                                            className="hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col items-center gap-1 group/btn"
+                                            title={rt.label}
+                                        >
+                                            <span className="text-lg group-hover/btn:scale-125 transition-transform duration-200">{rt.emoji}</span>
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 <button
                     onClick={() => setExpandedComments(!expandedComments)}
-                    className="font-medium hover:text-foreground transition-colors border-none bg-transparent cursor-pointer"
+                    className={`flex items-center gap-2 text-xs font-medium transition-all ${expandedComments ? 'text-accent' : 'text-muted hover:text-foreground'}`}
                 >
-                    Comment ({post.comments?.length || 0})
+                    <MessageSquare size={16} />
+                    <span>{post.comments?.length || 0} Comments</span>
+                </button>
+
+                <button className="flex items-center gap-2 text-xs font-medium text-muted hover:text-foreground transition-all ml-auto">
+                    <Share2 size={16} />
+                    <span>Share</span>
                 </button>
             </div>
 
