@@ -204,28 +204,28 @@ export default function Sidebar() {
                         </h2>
                         <div className="grid grid-cols-2 gap-3 px-2">
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
-                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
-                                    <Award size={12} className="text-yellow-400" /> Rep
-                                </div>
-                                <div className="text-lg font-bold text-foreground">{(stats.reputation || 0).toLocaleString()}</div>
-                            </div>
-                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
-                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
-                                    <Flame size={12} className="text-orange-500" /> Streak
-                                </div>
-                                <div className="text-lg font-bold text-foreground">{stats.streak}d</div>
-                            </div>
-                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
-                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
-                                    <BookOpen size={12} className="text-blue-400" /> Courses
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-[0.1em] mb-2">
+                                    <BookOpen size={18} className="text-blue-400 shrink-0" /> Courses
                                 </div>
                                 <div className="text-lg font-bold text-foreground">{stats.courses}</div>
                             </div>
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
-                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
-                                    <Rocket size={12} className="text-purple-400" /> Projects
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-[0.1em] mb-2">
+                                    <Rocket size={18} className="text-purple-400 shrink-0" /> Projects
                                 </div>
                                 <div className="text-lg font-bold text-foreground">{stats.projects}</div>
+                            </div>
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-[0.1em] mb-2">
+                                    <Award size={18} className="text-yellow-400 shrink-0" /> Rep
+                                </div>
+                                <div className="text-lg font-bold text-foreground">{(stats.reputation || 0).toLocaleString()}</div>
+                            </div>
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-[0.1em] mb-2">
+                                    <Flame size={18} className="text-orange-500 shrink-0" /> Streak
+                                </div>
+                                <div className="text-lg font-bold text-foreground">{stats.streak}d</div>
                             </div>
                         </div>
                     </div>

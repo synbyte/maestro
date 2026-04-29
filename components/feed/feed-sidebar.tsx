@@ -195,31 +195,31 @@ export function FeedSidebar() {
                     <div className="grid grid-cols-2 gap-4">
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<Award size={14} className="text-yellow-400" />}
-                            label="Rep"
-                            value={(userProfile.reputation || 0).toLocaleString()}
-                            tooltip="Earn reputation by interacting with the community"
-                        />
-                        <StatItem
-                            href={`/profile/${user.id}`}
-                            icon={<Flame size={14} className="text-orange-500" />}
-                            label="Streak"
-                            value={`${userProfile.current_streak || 0}d`}
-                            tooltip="Consecutive active days"
-                        />
-                        <StatItem
-                            href={`/profile/${user.id}`}
-                            icon={<BookOpen size={14} className="text-blue-400" />}
+                            icon={<BookOpen size={18} className="text-blue-400" />}
                             label="Courses"
                             value={completedCourseCount}
                             tooltip="Total courses completed"
                         />
                         <StatItem
                             href={`/profile/${user.id}`}
-                            icon={<Rocket size={14} className="text-purple-400" />}
+                            icon={<Rocket size={15} className="text-purple-400" />}
                             label="Projects"
                             value={projectCount}
                             tooltip="Total projects shipped"
+                        />
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<Award size={18} className="text-yellow-400" />}
+                            label="Rep"
+                            value={(userProfile.reputation || 0).toLocaleString()}
+                            tooltip="Earn reputation by interacting with the community"
+                        />
+                        <StatItem
+                            href={`/profile/${user.id}`}
+                            icon={<Flame size={18} className="text-orange-500" />}
+                            label="Streak"
+                            value={`${userProfile.current_streak || 0}d`}
+                            tooltip="Consecutive active days"
                         />
                     </div>
                 </div>
@@ -349,10 +349,10 @@ function StatItem({ href, icon, label, value, tooltip }: { href: string; icon: R
                 href={href}
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
-                className="bg-white/[0.03] hover:bg-white/5 transition-all duration-300 p-4 rounded-xl border border-white/5 group block"
+                className="bg-white/[0.03] hover:bg-white/5 transition-all duration-300 p-3.5 rounded-xl border border-white/5 group block overflow-hidden"
             >
-                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-[0.15em] mb-2 group-hover:text-accent transition-colors">
-                    {icon} {label}
+                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase tracking-[0.1em] mb-2 group-hover:text-accent transition-colors">
+                    <div className="shrink-0">{icon}</div> {label}
                 </div>
                 <div className="text-xl font-bold text-foreground group-hover:scale-105 transition-transform origin-left">{value}</div>
             </Link>
