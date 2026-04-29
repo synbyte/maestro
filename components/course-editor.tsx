@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { COURSES } from "@/lib/constants";
+import { Dropdown } from "@/components/ui/dropdown";
 
 interface Course {
     id: string;
@@ -188,20 +189,16 @@ export function CourseEditor({ userId }: { userId: string }) {
                     {/* Course Name */}
                     <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted block">Course Name</label>
-                        <select
+                        <Dropdown
                             value={course.course_name}
-                            onChange={(e) => {
-                                updateCourse(index, "course_name", e.target.value);
+                            options={COURSES}
+                            onChange={(val) => {
+                                updateCourse(index, "course_name", val);
                                 setTimeout(() => saveCourse(index), 0);
                             }}
-                            className="input-field py-1.5 text-sm w-full"
+                            placeholder="Select a course..."
                             disabled={isSavingIndex === index}
-                        >
-                            <option value="">Select a course...</option>
-                            {COURSES.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                        />
                     </div>
 
                     {/* Week & Lesson Selectors */}
@@ -209,32 +206,30 @@ export function CourseEditor({ userId }: { userId: string }) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <label className="text-xs font-medium text-muted block">Current Week</label>
-                                <select
-                                    value={course.week_number ?? 1}
-                                    onChange={(e) => updateCourse(index, "week_number", parseInt(e.target.value))}
-                                    onBlur={() => saveCourse(index)}
+                                <Dropdown
+                                    value={course.week_number?.toString() || "1"}
+                                    options={WEEKS.map(w => w.toString())}
+                                    onChange={(val) => {
+                                        updateCourse(index, "week_number", parseInt(val));
+                                        setTimeout(() => saveCourse(index), 0);
+                                    }}
+                                    placeholder="Week"
                                     disabled={isSavingIndex === index}
-                                    className="input-field py-1.5 text-sm w-full"
-                                >
-                                    {WEEKS.map(w => (
-                                        <option key={w} value={w}>Week {w}</option>
-                                    ))}
-                                </select>
+                                />
                             </div>
 
                             <div className="space-y-1.5">
                                 <label className="text-xs font-medium text-muted block">Current Lesson</label>
-                                <select
-                                    value={course.lesson_number ?? 1}
-                                    onChange={(e) => updateCourse(index, "lesson_number", parseInt(e.target.value))}
-                                    onBlur={() => saveCourse(index)}
+                                <Dropdown
+                                    value={course.lesson_number?.toString() || "1"}
+                                    options={LESSONS.map(l => l.toString())}
+                                    onChange={(val) => {
+                                        updateCourse(index, "lesson_number", parseInt(val));
+                                        setTimeout(() => saveCourse(index), 0);
+                                    }}
+                                    placeholder="Lesson"
                                     disabled={isSavingIndex === index}
-                                    className="input-field py-1.5 text-sm w-full"
-                                >
-                                    {LESSONS.map(l => (
-                                        <option key={l} value={l}>Lesson {l}</option>
-                                    ))}
-                                </select>
+                                />
                             </div>
                         </div>
                     )}

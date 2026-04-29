@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useReputation } from "@/components/reputation-provider";
+import { Dropdown } from "@/components/ui/dropdown";
 
 const STORAGE_KEY = "maestro_checkin_date";
 
@@ -158,29 +159,23 @@ export function DailyCheckIn() {
                                 <div className="grid grid-cols-2 gap-3 mb-3">
                                     <div>
                                         <label className="text-xs text-muted block mb-1">Week</label>
-                                        <select
-                                            value={course.new_week}
-                                            onChange={(e) => updateCourse(index, "new_week", parseInt(e.target.value))}
-                                            className="input-field py-1.5 text-sm w-full"
+                                        <Dropdown
+                                            value={course.new_week.toString()}
+                                            onChange={(val) => updateCourse(index, "new_week", parseInt(val))}
+                                            options={WEEKS.map(w => w.toString())}
                                             disabled={course.is_completed}
-                                        >
-                                            {WEEKS.map(w => (
-                                                <option key={w} value={w}>Week {w}</option>
-                                            ))}
-                                        </select>
+                                            placeholder="Week"
+                                        />
                                     </div>
                                     <div>
                                         <label className="text-xs text-muted block mb-1">Lesson</label>
-                                        <select
-                                            value={course.new_lesson}
-                                            onChange={(e) => updateCourse(index, "new_lesson", parseInt(e.target.value))}
-                                            className="input-field py-1.5 text-sm w-full"
+                                        <Dropdown
+                                            value={course.new_lesson.toString()}
+                                            onChange={(val) => updateCourse(index, "new_lesson", parseInt(val))}
+                                            options={LESSONS.map(l => l.toString())}
                                             disabled={course.is_completed}
-                                        >
-                                            {LESSONS.map(l => (
-                                                <option key={l} value={l}>Lesson {l}</option>
-                                            ))}
-                                        </select>
+                                            placeholder="Lesson"
+                                        />
                                     </div>
                                 </div>
 

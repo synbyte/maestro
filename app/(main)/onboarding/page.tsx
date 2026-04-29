@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import AvatarUpload from "@/components/avatar-upload";
 import { COURSES } from "@/lib/constants";
+import { Dropdown } from "@/components/ui/dropdown";
 
 export default function Onboarding() {
     const router = useRouter();
@@ -229,18 +230,12 @@ export default function Onboarding() {
                         <label className="text-sm font-medium text-muted block" htmlFor="courseName">
                             Course Name
                         </label>
-                        <select
-                            id="courseName"
+                        <Dropdown 
                             value={courseName}
-                            onChange={(e) => setCourseName(e.target.value)}
-                            className="input-field"
-                            required
-                        >
-                            <option value="">Select a course...</option>
-                            {COURSES.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                            onChange={setCourseName}
+                            options={COURSES}
+                            placeholder="Select a course..."
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -248,28 +243,22 @@ export default function Onboarding() {
                             <label className="text-sm font-medium text-muted block" htmlFor="week">
                                 Current Week
                             </label>
-                            <input
-                                id="week"
-                                type="number"
-                                min="1"
-                                value={weekNumber}
-                                onChange={(e) => setWeekNumber(parseInt(e.target.value))}
-                                className="input-field"
-                                required
+                            <Dropdown
+                                value={weekNumber.toString()}
+                                onChange={(val) => setWeekNumber(parseInt(val))}
+                                options={Array.from({ length: 30 }, (_, i) => (i + 1).toString())}
+                                placeholder="Week"
                             />
                         </div>
                         <div className="space-y-1.5">
                             <label className="text-sm font-medium text-muted block" htmlFor="lesson">
                                 Current Lesson
                             </label>
-                            <input
-                                id="lesson"
-                                type="number"
-                                min="1"
-                                value={lessonNumber}
-                                onChange={(e) => setLessonNumber(parseInt(e.target.value))}
-                                className="input-field"
-                                required
+                            <Dropdown
+                                value={lessonNumber.toString()}
+                                onChange={(val) => setLessonNumber(parseInt(val))}
+                                options={Array.from({ length: 15 }, (_, i) => (i + 1).toString())}
+                                placeholder="Lesson"
                             />
                         </div>
                     </div>
