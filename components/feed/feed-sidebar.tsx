@@ -7,6 +7,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { UserTooltip } from "@/components/user-tooltip";
 import { Award, Flame, BookOpen, Rocket } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CalendarWidget } from "@/components/calendar-widget";
 
 interface StudyBuddy {
     user_id: string;
@@ -172,6 +173,9 @@ export function FeedSidebar() {
 
     return (
         <div className="w-full md:w-64 flex-shrink-0 space-y-8">
+            {/* Calendar Widget */}
+            <CalendarWidget />
+
             {/* Your Stats */}
             {!loadingProfile && userProfile && (
                 <div className="bg-[#1a1a1a] border border-border rounded-xl p-5 animate-fade-in shadow-lg">
