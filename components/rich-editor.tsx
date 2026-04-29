@@ -84,7 +84,7 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
         <button
             type="button"
             onClick={onClick}
-            className={`p-1.5 rounded transition-colors ${isActive ? "bg-accent text-accent-fg" : "text-muted hover:text-foreground hover:bg-[#333]"
+            className={`p-2 rounded-xl transition-all duration-200 ${isActive ? "bg-accent text-accent-fg shadow-lg shadow-accent/20" : "text-muted hover:text-foreground hover:bg-white/5"
                 }`}
             title={title}
             disabled={disabled}
@@ -94,9 +94,9 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
     );
 
     return (
-        <div className="flex flex-col w-full border border-border rounded-lg bg-[#121212] overflow-hidden focus-within:border-accent/50 transition-colors">
+        <div className="flex flex-col w-full bg-[#1a1a1a]/40 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden focus-within:border-white/10 focus-within:bg-[#1a1a1a]/60 transition-all duration-300 shadow-xl">
             {/* Toolbar */}
-            <div className="flex items-center gap-1 p-2 border-b border-border bg-[#1a1a1a]">
+            <div className="flex items-center gap-1.5 p-3 border-b border-white/5 bg-white/[0.03]">
                 <MenuButton
                     onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
                     isActive={editor.isActive("heading", { level: 3 })}
@@ -104,7 +104,7 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
                 >
                     <Heading3 size={16} />
                 </MenuButton>
-                <div className="w-px h-4 bg-border mx-1" />
+                <div className="w-px h-5 bg-white/5 mx-1" />
                 <MenuButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     isActive={editor.isActive("bold")}
@@ -119,7 +119,7 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
                 >
                     <Italic size={16} />
                 </MenuButton>
-                <div className="w-px h-4 bg-border mx-1" />
+                <div className="w-px h-5 bg-white/5 mx-1" />
                 <MenuButton
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
                     isActive={editor.isActive("bulletList")}
@@ -134,7 +134,7 @@ export function RichEditor({ content, onChange, placeholder = "Write something..
                 >
                     <ListOrdered size={16} />
                 </MenuButton>
-                <div className="w-px h-4 bg-border mx-1" />
+                <div className="w-px h-5 bg-white/5 mx-1" />
                 <MenuButton
                     onClick={() => editor.chain().focus().toggleBlockquote().run()}
                     isActive={editor.isActive("blockquote")}

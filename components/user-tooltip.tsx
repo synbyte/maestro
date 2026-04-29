@@ -20,7 +20,8 @@ export function UserTooltip({ userId, children, className = "" }: UserTooltipPro
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState<"top" | "bottom">("top");
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const openTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -31,32 +32,34 @@ export function UserTooltip({ userId, children, className = "" }: UserTooltipPro
 
     useEffect(() => {
         return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            if (openTimerRef.current) clearTimeout(openTimerRef.current);
+            if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
         };
     }, []);
 
     const handleMouseEnter = () => {
-        if (timerRef.current) clearTimeout(timerRef.current);
+        if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
 
-        // Smart positioning
-        if (containerRef.current) {
-            const rect = containerRef.current.getBoundingClientRect();
-            // If the top of the element is less than 300px from the top of the viewport,
-            // show the tooltip below the element instead of above it.
-            if (rect.top < 300) {
-                setTooltipPosition("bottom");
-            } else {
-                setTooltipPosition("top");
+        openTimerRef.current = setTimeout(() => {
+            // Smart positioning
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                if (rect.top < 300) {
+                    setTooltipPosition("bottom");
+                } else {
+                    setTooltipPosition("top");
+                }
             }
-        }
-
-        setShow(true);
+            setShow(true);
+        }, 400); // 400ms delay to prevent accidental triggers
     };
 
     const handleMouseLeave = () => {
-        timerRef.current = setTimeout(() => {
+        if (openTimerRef.current) clearTimeout(openTimerRef.current);
+        
+        closeTimerRef.current = setTimeout(() => {
             setShow(false);
-        }, 100);
+        }, 150);
     };
 
     const fetchData = async () => {
@@ -111,12 +114,11 @@ export function UserTooltip({ userId, children, className = "" }: UserTooltipPro
                         transition={{
                             type: "spring",
                             damping: 20,
-                            stiffness: 300,
-                            opacity: { duration: 0.15 }
+                            stiffness: 300
                         }}
                         className={`
-                            absolute left-1/2 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-2xl z-[100]
-                            ${tooltipPosition === "top" ? "bottom-full mb-2" : "top-full mt-2"}
+                            absolute left-1/2 w-64 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl z-[100] backdrop-blur-xl overflow-hidden
+                            ${tooltipPosition === "top" ? "bottom-full mb-3" : "top-full mt-3"}
                         `}
                     >
                         {loading && !profile ? (
@@ -173,9 +175,9 @@ export function UserTooltip({ userId, children, className = "" }: UserTooltipPro
 
                         {/* Tooltip arrow */}
                         {tooltipPosition === "top" ? (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-[#333]" />
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-8 border-transparent border-t-white/10" />
                         ) : (
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 border-8 border-transparent border-b-[#333]" />
+                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-0.5 border-8 border-transparent border-b-white/10" />
                         )}
                     </motion.div>
                 )}

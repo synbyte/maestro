@@ -23,12 +23,17 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReputation } from "@/components/reputation-provider";
+import { useEffect, useRef } from "react";
 
 const REACTION_TYPES = [
     { emoji: "🔥", label: "Brilliant", value: "brilliant" },
+    { emoji: "❤️", label: "Heart", value: "heart" },
     { emoji: "💡", label: "Insightful", value: "insightful" },
     { emoji: "🤝", label: "Helpful", value: "helpful" },
-    { emoji: "👏", label: "Congrats", value: "congrats" }
+    { emoji: "👏", label: "Congrats", value: "congrats" },
+    { emoji: "😂", label: "Haha", value: "haha" },
+    { emoji: "😮", label: "Wow", value: "wow" },
+    { emoji: "👍", label: "Like", value: "like" }
 ];
 
 export function Post({ post, user, onRefresh }: { post: any, user: any, onRefresh?: () => void }) {
@@ -38,6 +43,18 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
     const [reactionPicker, setReactionPicker] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(post.content);
+    const pickerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!reactionPicker) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+                setReactionPicker(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [reactionPicker]);
 
     const handleEditSave = async () => {
         if (!editContent.trim() || editContent === post.content) {
@@ -304,7 +321,10 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
             <div className="flex items-center gap-6 pt-4 border-t border-white/5">
                 <div className="relative">
                     <button
-                        onClick={() => setReactionPicker(!reactionPicker)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setReactionPicker(!reactionPicker);
+                        }}
                         className={`flex items-center gap-2 text-xs font-medium transition-all ${reactionPicker ? 'text-accent' : 'text-muted hover:text-foreground'}`}
                     >
                         <Smile size={16} />
@@ -313,30 +333,25 @@ export function Post({ post, user, onRefresh }: { post: any, user: any, onRefres
 
                     <AnimatePresence>
                         {reactionPicker && (
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-                                    onClick={() => setReactionPicker(false)}
-                                />
-                                <motion.div 
-                                    initial={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
-                                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                                    className="absolute bottom-full left-0 mb-3 bg-[#1a1a1a] border border-white/10 rounded-2xl p-2 flex gap-1 z-20 shadow-2xl backdrop-blur-xl"
-                                >
-                                    {REACTION_TYPES.map(rt => (
-                                        <button
-                                            key={rt.value}
-                                            onClick={(e) => handleReact(rt.value, e)}
-                                            className="hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col items-center gap-1 group/btn"
-                                            title={rt.label}
-                                        >
-                                            <span className="text-lg group-hover/btn:scale-125 transition-transform duration-200">{rt.emoji}</span>
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            </>
+                            <motion.div 
+                                ref={pickerRef}
+                                initial={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 10, x: -10 }}
+                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                className="absolute bottom-full left-0 mb-3 bg-[#1a1a1a] border border-white/10 rounded-2xl p-2 flex gap-1 z-[100] shadow-2xl backdrop-blur-xl"
+                            >
+                                {REACTION_TYPES.map(rt => (
+                                    <button
+                                        key={rt.value}
+                                        onClick={(e) => handleReact(rt.value, e)}
+                                        className="hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col items-center gap-1 group/btn"
+                                        title={rt.label}
+                                    >
+                                        <span className="text-lg group-hover/btn:scale-125 transition-transform duration-200">{rt.emoji}</span>
+                                    </button>
+                                ))}
+                            </motion.div>
                         )}
                     </AnimatePresence>
                 </div>

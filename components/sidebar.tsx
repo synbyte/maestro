@@ -127,107 +127,117 @@ export default function Sidebar() {
     if (!user) return null;
 
     const sidebarContent = (
-        <>
-            <div className="p-6">
-                <Link href="/dashboard" className="flex items-center gap-2 mb-10 group" onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/logo.png" alt="Maestro Mix" className="w-10 h-10 object-contain" />
-                    <span className="text-xl font-medium tracking-tight">Maestro Mix</span>
+        <div className="flex flex-col h-full">
+            <div className="p-8 flex-1 overflow-y-auto scrollbar-hide">
+                <Link href="/dashboard" className="flex items-center gap-3 mb-12 group transition-transform hover:scale-[1.02]" onClick={() => setMobileMenuOpen(false)}>
+                    <img src="/logo.png" alt="Maestro Mix" className="w-10 h-10 object-contain drop-shadow-2xl" />
+                    <span className="text-xl font-bold tracking-tight text-foreground">Maestro Mix</span>
                 </Link>
-                <nav className="space-y-2">
+                <nav className="space-y-1.5">
                     <Link
                         href="/dashboard"
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`block px-4 py-2 rounded text-sm transition-colors ${pathname === '/dashboard' ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
+                        className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${pathname === '/dashboard' ? 'bg-white/10 text-foreground shadow-lg' : 'text-muted hover:text-foreground hover:bg-white/5'}`}
                     >
+                        <div className={`w-1 h-4 rounded-full transition-all ${pathname === '/dashboard' ? 'bg-accent opacity-100' : 'bg-transparent opacity-0'}`} />
                         Home
                     </Link>
 
                     <Link
                         href="/inbox"
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`flex items-center justify-between px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/inbox') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
+                        className={`group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${pathname.startsWith('/inbox') ? 'bg-white/10 text-foreground shadow-lg' : 'text-muted hover:text-foreground hover:bg-white/5'}`}
                     >
-                        <span>Inbox</span>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-1 h-4 rounded-full transition-all ${pathname.startsWith('/inbox') ? 'bg-accent opacity-100' : 'bg-transparent opacity-0'}`} />
+                            Inbox
+                        </div>
                         {unreadCount > 0 && (
-                            <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                            <span className="bg-accent text-accent-fg text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
                                 {unreadCount > 99 ? "99+" : unreadCount}
                             </span>
                         )}
                     </Link>
 
-                    {/* Coming Soon Skeletons */}
-                    <div className="space-y-1">
-                        <Link
-                            href="/events"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className={`block px-4 py-2 rounded text-sm transition-colors ${pathname.startsWith('/events') ? 'bg-[#333] text-[#ecebe4]' : 'text-[#aaaaa5] hover:text-[#ecebe4] hover:bg-[#222]'}`}
-                        >
-                            Events
-                        </Link>
-                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
-                            <span>Study</span>
-                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
+                    <Link
+                        href="/events"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${pathname.startsWith('/events') ? 'bg-white/10 text-foreground shadow-lg' : 'text-muted hover:text-foreground hover:bg-white/5'}`}
+                    >
+                        <div className={`w-1 h-4 rounded-full transition-all ${pathname.startsWith('/events') ? 'bg-accent opacity-100' : 'bg-transparent opacity-0'}`} />
+                        Events
+                    </Link>
+
+                    {/* Soon Sections */}
+                    <div className="pt-6 pb-2 px-4">
+                        <span className="text-[10px] font-bold text-muted/40 uppercase tracking-[0.2em]">Coming Soon</span>
+                    </div>
+                    <div className="space-y-1 opacity-40">
+                        <div className="px-4 py-3 flex items-center justify-between text-sm text-muted/60 font-medium">
+                            <span>Study Space</span>
                         </div>
-                        <div className="px-4 py-2 flex items-center justify-between text-sm text-[#aaaaa5] opacity-30 cursor-not-allowed">
-                            <span>Showcase</span>
-                            <span className="text-[8px] border border-[#444] px-1 rounded uppercase font-bold tracking-widest">Soon</span>
+                        <div className="px-4 py-3 flex items-center justify-between text-sm text-muted/60 font-medium">
+                            <span>Project Showcase</span>
                         </div>
                     </div>
                 </nav>
 
                 {/* Mobile-only Widgets */}
-                <div className="mt-10 md:hidden space-y-8 pb-10">
-                    <div className="px-4">
-                        <h2 className="text-[10px] font-bold tracking-[0.2em] text-muted uppercase mb-4">Your Progress</h2>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
-                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
-                                    <Award size={10} className="text-yellow-500" /> Rep
+                <div className="mt-12 md:hidden space-y-10 pb-10">
+                    <div>
+                        <h2 className="text-[10px] font-bold tracking-[0.25em] text-muted uppercase mb-5 px-4 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                            Your Progress
+                        </h2>
+                        <div className="grid grid-cols-2 gap-3 px-2">
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
+                                    <Award size={12} className="text-yellow-400" /> Rep
                                 </div>
-                                <div className="text-sm font-bold">{stats.reputation}</div>
+                                <div className="text-lg font-bold text-foreground">{(stats.reputation || 0).toLocaleString()}</div>
                             </div>
-                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
-                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
-                                    <Flame size={10} className="text-orange-500" /> Streak
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
+                                    <Flame size={12} className="text-orange-500" /> Streak
                                 </div>
-                                <div className="text-sm font-bold">{stats.streak}d</div>
+                                <div className="text-lg font-bold text-foreground">{stats.streak}d</div>
                             </div>
-                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
-                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
-                                    <BookOpen size={10} className="text-blue-500" /> Courses
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
+                                    <BookOpen size={12} className="text-blue-400" /> Courses
                                 </div>
-                                <div className="text-sm font-bold">{stats.courses}</div>
+                                <div className="text-lg font-bold text-foreground">{stats.courses}</div>
                             </div>
-                            <div className="bg-[#1a1a1a] p-3 rounded border border-[#333]">
-                                <div className="flex items-center gap-1.5 text-[9px] text-muted uppercase mb-1">
-                                    <Rocket size={10} className="text-purple-500" /> Projects
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-xl">
+                                <div className="flex items-center gap-2 text-[9px] text-muted uppercase tracking-widest mb-2">
+                                    <Rocket size={12} className="text-purple-400" /> Projects
                                 </div>
-                                <div className="text-sm font-bold">{stats.projects}</div>
+                                <div className="text-lg font-bold text-foreground">{stats.projects}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="px-4">
+                    <div className="px-2">
                         <CalendarWidget />
                     </div>
                 </div>
             </div>
 
-            <div className="p-4 border-t border-[#333] relative flex items-center gap-1">
+            <div className="p-6 border-t border-white/5 bg-black/10 backdrop-blur-md relative flex items-center gap-2">
                 {menuOpen && (
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                        <div className="absolute bottom-full left-4 mb-2 w-56 bg-[#1a1a1a] border border-[#333] rounded shadow-lg overflow-hidden animate-fade-in z-50">
+                        <div className="absolute bottom-[calc(100%+12px)] left-6 right-6 bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 p-1.5 backdrop-blur-xl">
                             <Link
                                 href="/profile/edit"
-                                className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-[#ecebe4]"
+                                className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-white/5 rounded-xl transition-all text-foreground font-medium"
                                 onClick={() => { setMenuOpen(false); setMobileMenuOpen(false); }}
                             >
                                 Edit Profile
                             </Link>
                             <button
                                 onClick={handleSignOut}
-                                className="block w-full text-left px-4 py-3 text-sm hover:bg-[#333] transition-colors text-red-500"
+                                className="flex items-center gap-3 w-full text-left px-4 py-3 text-sm hover:bg-red-500/10 rounded-xl transition-all text-red-500 font-medium"
                             >
                                 Sign out
                             </button>
@@ -237,18 +247,21 @@ export default function Sidebar() {
 
                 <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex-1 flex items-center gap-3 p-2 rounded hover:bg-[#222] transition-colors text-left overflow-hidden"
+                    className="flex-1 flex items-center gap-3 p-2 rounded-2xl hover:bg-white/5 transition-all duration-300 text-left overflow-hidden group/profile"
                 >
-                    {profile?.avatar_url ? (
-                        <img src={profile.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover bg-[#333]" />
-                    ) : (
-                        <div className="w-9 h-9 rounded-full bg-[#333] flex-shrink-0" />
-                    )}
+                    <div className="relative shrink-0">
+                        {profile?.avatar_url ? (
+                            <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-xl object-cover bg-white/5 border border-white/10" />
+                        ) : (
+                            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex-shrink-0" />
+                        )}
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-[#121212] rounded-full" />
+                    </div>
                     <div className="flex-1 overflow-hidden">
-                        <div className="text-sm font-medium text-[#ecebe4] truncate">
-                            {profile?.display_name || "New User"}
+                        <div className="text-sm font-bold text-foreground truncate group-hover/profile:text-accent transition-colors">
+                            {profile?.display_name?.split(' ')[0] || "New User"}
                         </div>
-                        <div className="text-xs text-[#aaaaa5] truncate">
+                        <div className="text-[10px] text-muted truncate uppercase tracking-tight font-medium">
                             {profile?.start_date ? `${new Date(profile.start_date + "T12:00:00").toLocaleString('default', { month: 'short' })}. Cohort` : "Set up profile"}
                         </div>
                     </div>
@@ -257,47 +270,49 @@ export default function Sidebar() {
                 <Link
                     href="/notifications"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`p-2 rounded hover:bg-[#222] transition-colors relative ${pathname === '/notifications' ? 'text-accent bg-[#222]' : 'text-[#aaaaa5]'}`}
+                    className={`p-3 rounded-2xl hover:bg-white/5 transition-all relative ${pathname === '/notifications' ? 'text-accent bg-white/10' : 'text-muted hover:text-foreground'}`}
                     title="Notifications"
                 >
                     <Bell size={20} />
                     {unreadNotifCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold px-1 rounded-full min-w-[15px] h-[15px] flex items-center justify-center border border-[#121212] shadow-lg">
+                        <span className="absolute top-2 right-2 bg-accent text-accent-fg text-[9px] font-bold px-1 rounded-full min-w-[15px] h-[15px] flex items-center justify-center border border-[#121212] shadow-lg">
                             {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
                         </span>
                     )}
                 </Link>
             </div>
-        </>
+        </div>
     );
 
     return (
         <>
             {/* Desktop Sidebar */}
-            <aside className="fixed left-0 top-0 h-screen w-64 border-r border-[#333] bg-[#121212] flex-col justify-between hidden md:flex z-40">
+            <aside className="fixed left-0 top-0 h-screen w-64 border-r border-white/5 bg-[#121212]/80 backdrop-blur-xl flex-col justify-between hidden md:flex z-40">
                 {sidebarContent}
             </aside>
 
             {/* Mobile Header & Hamburger */}
-            <div className="md:hidden flex items-center justify-between p-4 border-b border-[#333] bg-[#121212] sticky top-0 z-40">
+            <div className="md:hidden flex items-center justify-between px-6 h-16 border-b border-white/5 bg-[#121212]/80 backdrop-blur-xl sticky top-0 z-40">
                 <Link href="/dashboard" className="flex items-center gap-2">
                     <img src="/logo.png" alt="Maestro Mix" className="w-8 h-8 object-contain" />
-                    <span className="text-lg font-medium tracking-tight">Maestro Mix</span>
+                    <span className="text-lg font-bold tracking-tight text-foreground">Maestro Mix</span>
                 </Link>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {unreadNotifCount > 0 && (
                         <Link
                             href="/notifications"
-                            className="p-2 text-[#aaaaa5] relative"
-                            title="Notifications"
+                            className="p-2 text-muted relative hover:text-foreground transition-colors"
                         >
                             <Bell size={20} />
-                            <span className="absolute top-1 right-1 bg-blue-600 text-white text-[8px] font-bold px-1 rounded-full min-w-[14px] h-[14px] flex items-center justify-center border border-[#121212]">
+                            <span className="absolute top-1.5 right-1.5 bg-accent text-accent-fg text-[8px] font-bold px-1 rounded-full min-w-[14px] h-[14px] flex items-center justify-center border border-[#121212]">
                                 {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
                             </span>
                         </Link>
                     )}
-                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-[#ecebe4]">
+                    <button 
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                        className="p-2 text-foreground hover:bg-white/5 rounded-lg transition-all"
+                    >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -308,8 +323,8 @@ export default function Sidebar() {
             {/* Mobile Slide-over Sidebar */}
             {mobileMenuOpen && (
                 <div className="fixed inset-0 z-50 flex md:hidden">
-                    <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
-                    <aside className="relative flex flex-col w-64 max-w-sm h-full bg-[#121212] border-r border-[#333] shadow-xl justify-between">
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setMobileMenuOpen(false)} />
+                    <aside className="relative flex flex-col w-72 max-w-[80vw] h-full bg-[#121212] border-r border-white/10 shadow-2xl justify-between animate-in slide-in-from-left duration-300">
                         {sidebarContent}
                     </aside>
                 </div>
