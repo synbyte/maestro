@@ -222,7 +222,7 @@ export default function EditProfile() {
                             value={bio}
                             onChange={(e) => setBio(e.target.value)}
                             className="input-field min-h-[100px] resize-none"
-                            placeholder="What are you hoping to learn?"
+                            placeholder="Tell your peers about yourself."
                             required
                             disabled={isLoading}
                         />

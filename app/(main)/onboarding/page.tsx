@@ -216,7 +216,7 @@ export default function Onboarding() {
                             value={bio}
                             onChange={(e) => setBio(e.target.value)}
                             className="input-field min-h-[100px] resize-none"
-                            placeholder="What are you hoping to learn?"
+                            placeholder="Tell you peers about yourself."
                             required
                         />
                     </div>
